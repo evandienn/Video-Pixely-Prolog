@@ -77,10 +77,10 @@ This element is critical because it demonstrates the simplest yet most foundatio
 By establishing a structured way to categorize occasions and relationships with associated gifts, we lay the groundwork for more complex features, such as user preferences.
 
 We provide the facts for the different occasions and relationships.
-https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/595be13cfcccfd4c6c5c4d26d4748da857d1dbbd/prolog/gift_recommender.pl#L3C1-L13C23
+https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/595be13cfcccfd4c6c5c4d26d4748da857d1dbbd/prolog/gift_recommender.pl#L3-L13
 
 We then ask the user for input for an occasion and relationship.
-https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/595be13cfcccfd4c6c5c4d26d4748da857d1dbbd/prolog/gift_recommender.pl#L43C1-L53C1
+https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/595be13cfcccfd4c6c5c4d26d4748da857d1dbbd/prolog/gift_recommender.pl#L43-L53
 
 The variables unifiy with the user inputs.
 https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/595be13cfcccfd4c6c5c4d26d4748da857d1dbbd/prolog/gift_recommender.pl#L45
@@ -139,9 +139,10 @@ Enter the given occasions and relationships in the user input prompt, and you wi
 
 Example:
 
-
+```prolog
 ?- recommend.
 Enter the occasion (birthday, anniversary, new_year, christmas): new_year.
 Enter the relationship (friend, family, colleague, partner): |: friend.
 Recommendation: a box of cereal
 true.
+```
