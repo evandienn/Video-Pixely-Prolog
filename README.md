@@ -69,36 +69,39 @@ Or:
 
 ## Proof of Concept
 
-Our proof of concept showcases our ability to intake user input of the occasion and relationship of the gift receiver, and recommend a gift by searching through the knowledge base with the given inputs.
-The core functionality involves defining a set of occasions (like birthdays and anniversaries) and relationships (such as friends and family), along with a corresponding list of potential gifts.
+Our proof of concept showcases an application prototype that accepts user input and recommends gifts by searching through a knowledge base matching occasions with relationships between a gifter and the recipient.
+
+The core functionality involves defining a set of occasions (like birthdays and anniversaries) and relationships (such as friend and family), along with a corresponding list of potential gifts.
 The user inputs their occasion and relationship, and the system searches for a suitable gift recommendation.
 
 This element is critical because it demonstrates the simplest yet most foundational logic and decision-making process that can be expanded upon in a more comprehensive gift recommendation application.
 By establishing a structured way to categorize occasions and relationships with associated gifts, we lay the groundwork for more complex features, such as user preferences.
 
-We provide the facts for the different occasions and relationships.
+### Application Workflow
+We provide facts for a pre-defined set of occasions and relationships.
 https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/595be13cfcccfd4c6c5c4d26d4748da857d1dbbd/prolog/gift_recommender.pl#L3-L13
 
-We then ask the user for input for an occasion and relationship.
+We then ask the user to input an occasion and relationship.
 https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/595be13cfcccfd4c6c5c4d26d4748da857d1dbbd/prolog/gift_recommender.pl#L43-L53
 
-The variables unifiy with the user inputs.
+Variables `O` and `R` are then unified with the user inputs.
 https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/595be13cfcccfd4c6c5c4d26d4748da857d1dbbd/prolog/gift_recommender.pl#L45
 https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/595be13cfcccfd4c6c5c4d26d4748da857d1dbbd/prolog/gift_recommender.pl#L47
 
-We then use an if statement to handle incorrect inputs of occasion and relationship.
+We use an if statement to handle invalid occasion-relationship pairs.
 https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/595be13cfcccfd4c6c5c4d26d4748da857d1dbbd/prolog/gift_recommender.pl#L48-L52
 
-If a valid gift is found, the recommendation will be unified in the variable "Gift", and the receommendation will be printed out.
+If a valid gift is found (i.e. `Gift` is unified with a value), it will result in a recommendation.
 https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/595be13cfcccfd4c6c5c4d26d4748da857d1dbbd/prolog/gift_recommender.pl#L49
 
-The rule we used to recommend gifts is this:
+### Rules for gift recommendation
+`recommend_gift/3` establishes the logical relationships among occasions, relationships, and gifts.
 https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/595be13cfcccfd4c6c5c4d26d4748da857d1dbbd/prolog/gift_recommender.pl#L36-L40
 
-`occasion(O)` checks if the value in the Variable O matches one of the occasions.
+`occasion(O)` checks if `O` matches one of the occasions in the knowledge base.
 https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/595be13cfcccfd4c6c5c4d26d4748da857d1dbbd/prolog/gift_recommender.pl#L38
 
-`relationship(R)` checks if the value in the Variable R matches one of the relationships
+`relationship(R)` checks if `R` matches one of the relationships in the knowledge base.
 https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/595be13cfcccfd4c6c5c4d26d4748da857d1dbbd/prolog/gift_recommender.pl#L39
 
 If both checks succeed, the predicate `gift/3` will search for a corresponding gift with the given occasion and relationship.
@@ -107,11 +110,12 @@ https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/595be13cfcccfd4c6
 If no valid gift is found, an error message will be printed.
 https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/595be13cfcccfd4c6c5c4d26d4748da857d1dbbd/prolog/gift_recommender.pl#L51
 
-Completing this proof-of-concept gives us confidence that, with further development, we can build out a minimal viable product (MVP).
-The successful implementation of the basic recommendation logic showcases our ability to handle user input, handle wrong user inputs, process data, and generate output, all of which are essential components of a fully functional application.
-Moreover, the simplicity of Prolog's logic programming paradigm allows for easy extensions, such as adding new occasions, relationships, and gifts, or integrating external data sources for more sophisticated recommendations.
+### Conclusion
+Completing this proof-of-concept gives us confidence that, with further development, we can build a minimal viable product (MVP).
+The successful implementation of the basic recommendation logic showcases the ability to handle user input, handle wrong user inputs, process data, and generate output. All of these are essential components of a fully functional application.
+Moreover, brevity, composability, and expressivity bestowed upon by Prolog's logical programming paradigm will facilitate extensions, such as adding new occasions, relationships, and gifts, or integrating external data sources for more sophisticated recommendations.
 
-Overall, this proof-of-concept serves as a solid foundation upon which we can construct a more robust gift recommender system that meets user needs in a practical and engaging manner.
+Overall, this proof-of-concept serves as a solid foundation upon which we can construct a more robust gift recommendation system that meets user needs in a practical and engaging manner.
 With additional features and refinements, we can transform this initial version into a fully realized application capable of providing personalized gift suggestions for various occasions and relationships.
 
 
@@ -129,20 +133,25 @@ Load the gift recommender using swipl:
 swipl gift_recommender.pl
 ```
 
-Enter recommend. in the terminal to start the user input prompt:
+Enter `recommend.` in the terminal to trigger the user input prompt:
 
-```bash
+```prolog
 recommend.
 ```
 
-Enter the given occasions and relationships in the user input prompt, and you will receive a gift recommendation in the terminal.
-
-Example:
-
-```prolog
+After inputting any matching occasion and relationship, you will receive a gift recommendation.
+```
 ?- recommend.
 Enter the occasion (birthday, anniversary, new_year, christmas): new_year.
-Enter the relationship (friend, family, colleague, partner): |: friend.
+Enter the relationship (friend, family, colleague, partner): friend.
 Recommendation: a box of cereal
 true.
 ```
+If the occasion and relationship inputted do not match with each other or are invalid, you will be prompted with an error message.
+```
+?- recommend.
+Enter the occasion (birthday, anniversary, new_year, christmas): easter.
+Enter the relationship (friend, family, colleague, partner): enemy.
+No gift found, please enter valid occasion and relationship.
+```
+
