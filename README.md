@@ -21,7 +21,7 @@ This project is in fulfillment of the [CPSC 312 2024W1 project requirements](htt
 Our team is:
 
 + Team Member Name 1 (student # 1): optional awesome nickname 1
-+ Team Member Name 2 (student # 2): optional awesome nickname 2
++ Tony Huang 2 (student # 2): hy 2
 + Team Member Name 3 (student # 3): optional awesome nickname 3
 + If you have a fourth member: Team Member Name 4 (student # 4): optional awesome nickname 4
 + If you have a fifth member: Team Member Name 5 (student # 5): optional awesome nickname 5
@@ -76,43 +76,79 @@ Or:
 
 ## Proof of Concept
 
-Replace this with a description of your proof-of-concept. This may be as short as a few paragraphs, or it may be longer.
-It should **definitely** take less than 4 minutes to read carefully and thoroughly, though working through and running the
-code may take an extra 4 minutes. (Your guidance and links should make it easy for us to work through the code.)
+Our proof of concept showcases our ability to intake user input of the occasion and relationship of the gift receiver, and recommend a gift by searching through the knowledge base with the given inputs.
+The core functionality involves defining a set of occasions (like birthdays and anniversaries) and relationships (such as friends and family), along with a corresponding list of potential gifts.
+The user inputs their occasion and relationship, and the system searches for a suitable gift recommendation.
 
-Tell us:
+This element is critical because it demonstrates the simplest yet most foundational logic and decision-making process that can be expanded upon in a more comprehensive gift recommendation application.
+By establishing a structured way to categorize occasions and relationships with associated gifts, we lay the groundwork for more complex features, such as user preferences.
 
-+ what key element of your project the proof-of-concept focuses on
-+ what makes that such an important element
-+ how completing this gives you confidence that, with sufficient work, you could complete the full (minimal viable) project
+We provide the facts for the different occasions and relationships.
+https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/595be13cfcccfd4c6c5c4d26d4748da857d1dbbd/prolog/gift_recommender.pl#L3C1-L13C23
 
-Include links (likely even line-level links, which are easy to create in Github) throughout to critical pieces of
-the code to make it easy for us to understand what you've accomplished and how it fulfills the requirements.
+We then ask the user for input for an occasion and relationship.
+https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/595be13cfcccfd4c6c5c4d26d4748da857d1dbbd/prolog/gift_recommender.pl#L43C1-L53C1
 
-Also include instructions for us to test and run your code. (See our guidelines below.)
+The variables unifiy with the user inputs.
+https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/595be13cfcccfd4c6c5c4d26d4748da857d1dbbd/prolog/gift_recommender.pl#L45
+https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/595be13cfcccfd4c6c5c4d26d4748da857d1dbbd/prolog/gift_recommender.pl#L47
 
-A good goal to aim for is the top rubric item from proposal grading:
+We then use an if statement to handle incorrect inputs of occasion and relationship.
+https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/595be13cfcccfd4c6c5c4d26d4748da857d1dbbd/prolog/gift_recommender.pl#L48-L52
 
-> Fully functional proof-of-concept is easy to use and review, and it clearly demonstrates a key element necessary for the overall project.
+If a valid gift is found, the recommendation will be unified in the variable "Gift", and the receommendation will be printed out.
+https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/595be13cfcccfd4c6c5c4d26d4748da857d1dbbd/prolog/gift_recommender.pl#L49
 
-### How to test and run the code: Haskell
+The rule we used to recommend gifts is this:
+https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/595be13cfcccfd4c6c5c4d26d4748da857d1dbbd/prolog/gift_recommender.pl#L36-L40
 
-Replace this section with instructions to us for how to test and run your code.
+`occasion(O)` checks if the value in the Variable O matches one of the occasions.
+https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/595be13cfcccfd4c6c5c4d26d4748da857d1dbbd/prolog/gift_recommender.pl#L38
 
-As it is currently set up, editing works best if you first `cd` into the `haskell` subdirectory and open VS Code on that directory (`code .`). There is a `Makefile` with some helpful aliases, but you can also just use `stack` as normal.
+`relationship(R)` checks if the value in the Variable R matches one of the relationships
+https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/595be13cfcccfd4c6c5c4d26d4748da857d1dbbd/prolog/gift_recommender.pl#L39
 
-Note: We expect to be able to test your code by running `stack test`. Included among your tests should be some that demonstrate the core functionality of your code. (We will be running `make haskell-eval` from the project root.)
+If both checks succeed, the predicate `gift/3` will search for a corresponding gift with the given occasion and relationship.
+https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/595be13cfcccfd4c6c5c4d26d4748da857d1dbbd/prolog/gift_recommender.pl#L40
 
-We should be able to further explore your code's functionality by running `stack ghci`, and you should instruct us on some interesting cases to try.
+If no valid gift is found, an error message will be printed.
+https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/595be13cfcccfd4c6c5c4d26d4748da857d1dbbd/prolog/gift_recommender.pl#L51
 
-If you include instructions different from these, be **absolutely sure** that they will work well for us in whatever environment we run your code and that they will be as easy to use as the instructions above!
+Completing this proof-of-concept gives us confidence that, with further development, we can build out a minimal viable product (MVP).
+The successful implementation of the basic recommendation logic showcases our ability to handle user input, handle wrong user inputs, process data, and generate output, all of which are essential components of a fully functional application.
+Moreover, the simplicity of Prolog's logic programming paradigm allows for easy extensions, such as adding new occasions, relationships, and gifts, or integrating external data sources for more sophisticated recommendations.
+
+Overall, this proof-of-concept serves as a solid foundation upon which we can construct a more robust gift recommender system that meets user needs in a practical and engaging manner.
+With additional features and refinements, we can transform this initial version into a fully realized application capable of providing personalized gift suggestions for various occasions and relationships.
+
 
 ### How to test and run the code: Prolog
 
-Replace this section with instructions to us for how to test and run your code.
+Clone the repository and navigate to the Prolog subdirectory:
 
-We have set up a simple test file for you to extend using [Prolog Unit Testing](https://www.swi-prolog.org/pldoc/doc_for?object=section(%27packages/plunit.html%27)) library for testing. Included among your tests should be some that demonstrate the core functionality of your code. Please remove the example tests before you submit or you will lose marks. (We will be running `make prolog-eval` from the project root.)
+```bash
+cd prolog
+```
 
-In the `prolog` directory, you can run `make test` to run the unit tests. You can also load the test file into the swipl repl with `make test-repl` and in that repl you can run `run_tests.` to run those tests.
+Load the gift recommender using swipl:
 
-If you include instructions different from these, be **absolutely sure** that they will work well for us in whatever environment we run your code and that they will be as easy to use as the instructions above!
+```bash
+swipl gift_recommender.pl
+```
+
+Enter recommend. in the terminal to start the user input prompt:
+
+```bash
+recommend.
+```
+
+Enter the given occasions and relationships in the user input prompt, and you will receive a gift recommendation in the terminal.
+
+Example:
+
+
+?- recommend.
+Enter the occasion (birthday, anniversary, new_year, christmas): new_year.
+Enter the relationship (friend, family, colleague, partner): |: friend.
+Recommendation: a box of cereal
+true.
