@@ -78,37 +78,37 @@ This element is critical because it demonstrates the simplest yet most foundatio
 By establishing a structured way to categorize occasions and relationships with associated gifts, we lay the groundwork for more complex features, such as user preferences.
 
 ### Application Workflow
-We provide facts for a pre-defined set of occasions and relationships.
+- We provide facts for a pre-defined set of occasions and relationships.
 https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/595be13cfcccfd4c6c5c4d26d4748da857d1dbbd/prolog/gift_recommender.pl#L3-L13
 
-We then ask the user to input an occasion and relationship.
+- We then ask the user to input an occasion and relationship.
 https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/595be13cfcccfd4c6c5c4d26d4748da857d1dbbd/prolog/gift_recommender.pl#L43-L53
 
-Variables `O` and `R` are then unified with the user inputs.
+- Variables `O` and `R` are then unified with the user inputs.
 https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/595be13cfcccfd4c6c5c4d26d4748da857d1dbbd/prolog/gift_recommender.pl#L45
 https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/595be13cfcccfd4c6c5c4d26d4748da857d1dbbd/prolog/gift_recommender.pl#L47
 
-We use an if statement to handle invalid occasion-relationship pairs.
+- We use an if statement to handle invalid occasion-relationship pairs.
 https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/595be13cfcccfd4c6c5c4d26d4748da857d1dbbd/prolog/gift_recommender.pl#L48-L52
 
-If a valid gift is found (i.e. `Gift` is unified with a value), it will result in a recommendation.
+  - If a valid gift is found (i.e. `Gift` is unified with a value), it will result in a recommendation.
 https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/595be13cfcccfd4c6c5c4d26d4748da857d1dbbd/prolog/gift_recommender.pl#L49
 
-### Rules for gift recommendation
+  - If no valid gift is found, an error message will be printed.
+https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/595be13cfcccfd4c6c5c4d26d4748da857d1dbbd/prolog/gift_recommender.pl#L51
+
+#### Rules for gift recommendation
 `recommend_gift/3` establishes the logical relationships among occasions, relationships, and gifts.
 https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/595be13cfcccfd4c6c5c4d26d4748da857d1dbbd/prolog/gift_recommender.pl#L36-L40
 
-`occasion(O)` checks if `O` matches one of the occasions in the knowledge base.
+- `occasion(O)` checks if `O` matches one of the occasions in the knowledge base.
 https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/595be13cfcccfd4c6c5c4d26d4748da857d1dbbd/prolog/gift_recommender.pl#L38
 
-`relationship(R)` checks if `R` matches one of the relationships in the knowledge base.
+- `relationship(R)` checks if `R` matches one of the relationships in the knowledge base.
 https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/595be13cfcccfd4c6c5c4d26d4748da857d1dbbd/prolog/gift_recommender.pl#L39
 
-If both checks succeed, the predicate `gift/3` will search for a corresponding gift with the given occasion and relationship.
+- If both checks succeed, the predicate `gift/3` will search for a corresponding gift with the given occasion and relationship.
 https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/595be13cfcccfd4c6c5c4d26d4748da857d1dbbd/prolog/gift_recommender.pl#L40
-
-If no valid gift is found, an error message will be printed.
-https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/595be13cfcccfd4c6c5c4d26d4748da857d1dbbd/prolog/gift_recommender.pl#L51
 
 ### Conclusion
 Completing this proof-of-concept gives us confidence that, with further development, we can build a minimal viable product (MVP).
