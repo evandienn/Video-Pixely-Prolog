@@ -1,14 +1,5 @@
-# CPSC 312 Project
 
-Project Template for CPSC 312 Projects. Use this for both your proposal and final project submission.
-
-(Since you are submitting a link to a specific commit, we will be able to tell the difference.)
-
-The template to edit begins below. You can delete this header section once you've begun.
-
-We will post some additional material to include when you reach the final project stage.
-
-# Insert My Excellent Project Title Here
+# Prolog Gift Recommender
 
 This will be replaced with a very brief (one paragraph, 2-3 sentences) overview of the project.
 
@@ -35,6 +26,8 @@ We surely built on the work of others! Here are resources and people we got supp
 + A list of acknowledgments with a brief explanation of support received, e.g.:
   "We used Github Copilot extensively to generate first-pass implementations of chunks of the project that we had specified.
   We then manually adjusted and adapted these to our needs."
+
++ We used chatGpt to generate an empty template for the gift recommender program. We then implemented categories of the different occasions and relationships and the rules for recommending the gift for the occasions and recommendations.
 
 ## Product Pitch
 
