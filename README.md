@@ -12,7 +12,7 @@ Our team is:
 
 + Yasser Sanobar (student # 1): The burger
 + Tony Huang 2 (student # 2): hy 2
-+ Team Member Name 3 (student # 3): optional awesome nickname 3
++ Team Member Name 3 (student # 3): ED 3
 + If you have a fourth member: Team Member Name 4 (student # 4): optional awesome nickname 4
 + If you have a fifth member: Team Member Name 5 (student # 5): optional awesome nickname 5
 
@@ -45,23 +45,65 @@ Gifterly: Give with confidence, powered by intelligence and personal touch.
 
 
 ## Minimal Viable Project
+Gifterly is a Prolog-based gift recommendation application designed to simplify the process of finding personalized gifts. Our MVP provides gift suggestions based on key information about the recipient, such as their relationship to the gifter and the occasion for the gift. By implementing this core functionality, Gifterly creates a foundation for a more advanced recommendation system that can be expanded to incorporate user preferences, advanced filtering, and potentially a conversational interface.
 
-Replace this with a description of the minimal viable project you will actually build for CPSC 312 (if this becomes your final project).
-It may be as short as a few paragraphs, or it may be longer. It should **definitely** take less than 4 minutes
-to read carefully and thoroughly.
+---
 
-Make clear:
-+ how this builds meaningfully toward your product pitch above, without being nearly as much work,
-+ how it builds on the strength and power of the language, and
-+ how it leads naturally to learning and applying some new element of the language (including what that element is!)
+## Building Toward the Product Pitch
 
-Good goals to aim for are from the top two rubric items for proposal grading:
+### This MVP meaningfully advances our product pitch by implementing the core functionality:
 
-> The minimal viable project (MVP) builds on the strengths and power of the language in exciting ways that will clearly lead to excellent learning for students.
+1. **User Input and Output**  
+   - The MVP will prompt users to provide specific details about the recipient:
+     - The occasion (e.g., birthday, anniversary, Christmas).
+     - The recipient's relationship to the gifter (e.g., friend, family, colleague, partner).
+   - Using these inputs, Gifterly will generate tailored gift recommendations based on a structured Prolog knowledge base.
 
-Or:
+2. **Knowledge Base Construction**  
+   - A small, structured database of gift suggestions will be constructed, with entries associated with particular occasions and relationships. This knowledge base forms the core logic for the recommendation system.
 
-> The MVP clearly builds significantly on the language and will lead in interesting and natural ways to learning for the students.
+3. **Error Handling and User Feedback**  
+   - The system will handle invalid or unrecognized inputs (e.g., an unlisted occasion or relationship) by prompting the user to provide valid information.
+
+4. **Foundation for Expansion**  
+   - This MVP lays the groundwork for future features, such as incorporating complex relationships, adjusting recommendations based on user preferences, and potentially adding natural language processing (NLP) to allow for a more conversational experience.
+
+---
+
+## Leveraging Prolog's Strengths
+
+Gifterly’s design takes advantage of Prolog’s natural fit for rule-based systems and inference-driven logic. Here’s how we leverage Prolog’s strengths:
+
+1. **Logical Inference and Pattern Matching**  
+   - Prolog’s pattern-matching abilities make it well-suited for implementing a recommendation system based on relationships and occasions, allowing for simple and intuitive rule definitions.
+
+2. **Declarative Syntax for Knowledge Representation**  
+   - Using Prolog facts and rules to define relationships between occasions, relationships, and gifts provides a clean, maintainable structure. This approach also makes it easy to add or modify gift options as the system expands.
+
+3. **Backtracking for Searching**  
+   - Prolog’s backtracking mechanism allows us to query multiple possible gift recommendations. This is useful in scenarios where users may want to view several gift options for a given occasion and relationship.
+
+---
+
+## Learning and Applying Advanced Prolog Concepts
+
+This project provides an opportunity to explore and apply advanced Prolog concepts, such as:
+
+1. **Complex Querying with Recursive Rules**
+   - **What We’ll Learn**: Using recursion to navigate and filter through the knowledge base.
+   - **Application**: Recursive rules could enable a deeper analysis of user input, allowing for more sophisticated filtering of gift options based on specific conditions.
+
+2. **Prolog’s Built-In Control Structures**
+   - **What We’ll Learn**: How to handle conditional checks and fail cases using Prolog’s control constructs.
+   - **Application**: This allows us to manage invalid inputs effectively and respond with user-friendly prompts or alternative recommendations.
+
+3. **Dynamic Knowledge Base Expansion**
+   - **What We’ll Learn**: Modifying the knowledge base dynamically to accommodate user feedback or new data.
+   - **Application**: Enabling the system to learn from user preferences by dynamically adding new facts based on user input.
+
+4. **Higher-Order Predicates**
+   - **What We’ll Learn**: Utilizing Prolog’s higher-order predicates to generalize operations on gifts or occasions.
+   - **Application**: Higher-order predicates could allow us to filter gifts by specific attributes, such as type, cost, or popularity, making recommendations more tailored to the user’s needs.
 
 ## Proof of Concept
 
