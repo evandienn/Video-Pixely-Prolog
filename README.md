@@ -175,7 +175,7 @@ After inputting any matching occasion and relationship, you will receive a gift 
 ```
 ?- recommend.
 Enter the occasion (birthday, anniversary, new_year, christmas): new_year.
-Enter the relationship (friend, family, colleague, partner): friend.
+Enter the relationship (friend, family, colleague, partner): |: friend.
 Recommendation: a box of cereal
 true.
 ```
@@ -183,7 +183,8 @@ If the occasion and relationship inputted do not match with each other or are in
 ```
 ?- recommend.
 Enter the occasion (birthday, anniversary, new_year, christmas): easter.
-Enter the relationship (friend, family, colleague, partner): enemy.
+Enter the relationship (friend, family, colleague, partner): |: enemy.
 No gift found, please enter valid occasion and relationship.
+true.
 ```
 
