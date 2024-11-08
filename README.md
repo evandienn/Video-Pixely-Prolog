@@ -49,7 +49,7 @@ Gifterly is a Prolog-based gift recommendation application designed to simplify 
 
 ### Building Toward the Product Pitch
 
-### This MVP meaningfully advances our product pitch by implementing the core functionality:
+This MVP meaningfully advances our product pitch by implementing the core functionality:
 
 1. **User Input and Output**  
    - The MVP will prompt users to provide specific details about the recipient:
