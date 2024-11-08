@@ -11,10 +11,9 @@ This project is in fulfillment of the [CPSC 312 2024W1 project requirements](htt
 Our team is:
 
 + Yasser Sanobar (student # 1): The burger
-+ Tony Huang 2 (student # 2): hy 2
-+ Team Member Name 3 (student # 3): ED 3
++ Tony Huang 2 (student # 2): hy
++ Evan Dien (student # 3): ED
 + Kai Lau (student # 4): Kai
-+ If you have a fifth member: Team Member Name 5 (student # 5): optional awesome nickname 5
 
 We call ourselves: Burgersssss
 
