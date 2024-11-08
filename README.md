@@ -47,16 +47,14 @@ Gifterly: Give with confidence, powered by intelligence and personal touch.
 ## Minimal Viable Project
 Gifterly is a Prolog-based gift recommendation application designed to simplify the process of finding personalized gifts. Our MVP provides gift suggestions based on key information about the recipient, such as their relationship to the gifter and the occasion for the gift. By implementing this core functionality, Gifterly creates a foundation for a more advanced recommendation system that can be expanded to incorporate user preferences, advanced filtering, and potentially a conversational interface.
 
----
-
 ## Building Toward the Product Pitch
 
 ### This MVP meaningfully advances our product pitch by implementing the core functionality:
 
 1. **User Input and Output**  
    - The MVP will prompt users to provide specific details about the recipient:
-     - The occasion (e.g., birthday, anniversary, Christmas).
-     - The recipient's relationship to the gifter (e.g., friend, family, colleague, partner).
+   - The occasion (e.g., birthday, anniversary, Christmas).
+   - The recipient's relationship to the gifter (e.g., friend, family, colleague, partner).
    - Using these inputs, Gifterly will generate tailored gift recommendations based on a structured Prolog knowledge base.
 
 2. **Knowledge Base Construction**  
@@ -67,8 +65,6 @@ Gifterly is a Prolog-based gift recommendation application designed to simplify 
 
 4. **Foundation for Expansion**  
    - This MVP lays the groundwork for future features, such as incorporating complex relationships, adjusting recommendations based on user preferences, and potentially adding natural language processing (NLP) to allow for a more conversational experience.
-
----
 
 ## Leveraging Prolog's Strengths
 
@@ -82,8 +78,6 @@ Gifterly’s design takes advantage of Prolog’s natural fit for rule-based sys
 
 3. **Backtracking for Searching**  
    - Prolog’s backtracking mechanism allows us to query multiple possible gift recommendations. This is useful in scenarios where users may want to view several gift options for a given occasion and relationship.
-
----
 
 ## Learning and Applying Advanced Prolog Concepts
 
