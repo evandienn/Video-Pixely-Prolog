@@ -45,10 +45,26 @@ escape(S, I) :-
     string_chars(S, Chars),
     substitute(Chars, ' ', '_', NChars),
     atom_chars(I, NChars).
-%% end of utility functions %%
 
-% allows runtime modifications
-:- dynamic occasion/1, relationship/1, gender/1, gift/1, gift/2, gift/3, gift/4, gift/5, gift/6.
+read_str(String) :-
+    read_string(user_input, "\n", "\r\t ", _, String).
+
+read_number(_, No) :-
+    read_str(Input),
+    atom_number(Input, No).
+read_number(Question, No) :-
+    write(Question),
+    read_number(Question, No).
+
+get_yes_or_no(YesOrNo) :-
+    read_str(YN),
+    string_lower(YN, LYN),
+    (
+      LYN = "yes" -> YesOrNo = yes
+    ; LYN = "no" -> YesOrNo = no
+    ; write("Please enter yes or no."), nl, get_yes_or_no(YesOrNo)
+    ).
+%% end of utility functions %%
 
 % Define types of occasions
 occasion(birthday).
@@ -126,28 +142,35 @@ print_category_prompt(Category, Items) :-
 % which will be unified to `Item`
 prompt_category(Category, Item) :-
     print_category_prompt(Category, Items),
-    prompt_category_h(Category, Items, Item),
+    format(string(Question), "Enter a valid number for the ~w:~n", [Category]),
+    read_number(Question, ItemNo),
+    get_item(Category, Items, ItemNo, Item),
     unescape(Item, U),
     format("Ok, the ~w is ~w.~n", [Category, U]).
 
+prompt_assert_if_absent(Category, _, Item) :-
+    C =.. [Category, Item],
+    call(C).
+prompt_assert_if_absent(Category, Input, Item) :-
+    format("Do you want to add ~w into ~w? (enter yes or no)~n", [Input, Category]),
+    get_yes_or_no(YN),
+    (
+        YN = yes ->
+            dynamic(Category/1),
+            C =.. [Category, Item],
+            assertz(C)
+        ; nl
+    ).
+
 get_item(Category, _, 0, Item) :-
     format("Specify the ~w:~n", [Category]),
-    read(Input),
-    !,
-    escape(Input, Item).
+    read_str(Input),
+    escape(Input, Item),
+    prompt_assert_if_absent(Category, Input, Item).
 get_item(Category, Items, N, Item) :-
-    integer(N),
     M is N - 1,
     nth0(M, Items, Item),
     call(Category, Item).
-
-prompt_category_h(Category, Items, Item) :-
-    read(Input),
-    !,
-    get_item(Category, Items, Input, Item).
-prompt_category_h(Category, Items, Item) :-
-    format("Enter a valid number for the ~w:~n", [Category]),
-    prompt_category_h(Category, Items, Item).
 
 prompt_categories([], []).
 prompt_categories([Category|Cs], [Answer|As]) :-
@@ -155,26 +178,28 @@ prompt_categories([Category|Cs], [Answer|As]) :-
     prompt_categories(Cs, As).
 
 % Pretty-prints the given category items
-conditions([C], [A]) :-
+print_with_category_items(Prefix, [], []) :- write(Prefix).
+print_with_category_items(Prefix, Categories, Answers) :-
+    write(Prefix), write(" when "),
+    print_with_category_items(Categories, Answers).
+print_with_category_items([C], [A]) :-
     format("the ~w is ~w", [C, A]).
-conditions([C1, C2], [A1, A2]) :-
+print_with_category_items([C1, C2], [A1, A2]) :-
     format("the ~w is ~w and the ~w is ~w", [C1, A1, C2, A2]).
-conditions([C|Categories], [A|Answers]) :-
+print_with_category_items([C|Categories], [A|Answers]) :-
     format("the ~w is ~w, ", [C, A]),
-    conditions(Categories, Answers).
+    print_with_category_items(Categories, Answers).
 
 % Define a rule to recommend a gift based on category choices
 recommend_gift(Categories, Answers) :-
     G =.. [gift|Answers],
     catch(call(G, Gift), _, fail),
-    write("The Gift when "),
-    conditions(Categories, Answers),
+    print_with_category_items("The Gift", Categories, Answers),
     format(" is ~w.~n", [Gift]).
 
 % Recommends a more general gift if no exact gift was found
 recommend_gift(Categories, Answers) :-
-    format("There is no exact gift when "),
-    conditions(Categories, Answers), write("."), nl, !,
+    print_with_category_items("There is no exact gift", Categories, Answers), write("."), nl, !,
     recommend_general_gifts(Categories, Answers).
 
 % The category items of each general gift is a strict sublist of the given category items
@@ -188,8 +213,7 @@ recommend_general_gifts_h([Tuples|_]) :-
     unzip(Tuples, Categories, Answers),
     G =.. [gift|Answers],
     catch(call(G, Gift), _, fail),
-    format("A more general gift when "),
-    conditions(Categories, Answers),
+    print_with_category_items("A more general gift", Categories, Answers),
     format(" is ~w.~n", [Gift]).
 % TODO: iterate through all other recommendations?
 
@@ -206,16 +230,15 @@ recommend_alternative_gifts([], [], _).
 recommend_alternative_gifts(Categories, Answers, _) :-
     G =.. [gift|Answers],
     call(G, Gift),
-    write("An alternative gift when "),
-    conditions(Categories, Answers),
+    print_with_category_items("An alternative gift", Categories, Answers),
     format(" is ~w.~n", [Gift]).
 % TODO: implements recursive fuzzy match
 % exhausts a category for alternative items
 recommend_alternative_gifts([C|Categories], [A|Answers], Tried) :-
     call(C, Answer),
     A \= Answer,
-    \+ member(tried(C, Answer), Tried),
-    recommend_alternative_gifts([C|Categories], [Answer|Answers], [tried(C, Answer)|Tried]).
+    \+ member((C, Answer), Tried),
+    recommend_alternative_gifts([C|Categories], [Answer|Answers], [(C, Answer)|Tried]).
 % category exhausted, strips it and move on to the following category
 recommend_alternative_gifts([_|Categories], [_|Answers], _) :-
     recommend_alternative_gifts(Categories, Answers, []).
@@ -230,7 +253,8 @@ recommend(Categories) :-
     prompt_categories(Categories, Answers),
     % TODO: prompt for age_group, e.g. "how old are they?"
     % TODO: prompt for budget
-    recommend_gift(Categories, Answers).
+    recommend_gift(Categories, Answers),
+    recommend(Categories).
 
 % Sample query
 % ?- recommend.
