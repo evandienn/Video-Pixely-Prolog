@@ -1,7 +1,54 @@
-% Gift Recommender
+% Gifterly
+
+%% utility functions %%
+zip([], _, []).
+zip(_, [], []).
+zip([X|Xs], [Y|Ys], [(X,Y)|Zs]) :- zip(Xs, Ys, Zs).
+
+unzip([], [], []).
+unzip([(X,Y)|Zs], [X|Xs], [Y|Ys]) :- unzip(Zs, Xs, Ys).
+
+compare_by_length_then_intrinsic(Delta, Sub1, Sub2) :-
+    length(Sub1, Len1), length(Sub2, Len2),
+    ( Len1 < Len2 -> Delta = '>'
+    ; Len1 > Len2 -> Delta = '<'
+    ; compare(Delta, Sub2, Sub1)
+    ).
+
+all_strict_sublists(List, SubLists) :-
+    all_strict_sublists([], List, Unsorted),
+    predsort(compare_by_length_then_intrinsic, Unsorted, SubLists).
+
+all_strict_sublists(Prefix, [H|List], SubLists) :-
+    append(Prefix, [H], Prefix2),
+    all_strict_sublists(Prefix, List, SubLists1),
+    all_strict_sublists(Prefix2, List, SubLists2),
+    append(SubLists1, SubLists2, SubLists).
+
+all_strict_sublists(Prefix, [], [Prefix]).
+
+substitute([], _, _, []).
+substitute(_, C, C, _).
+substitute([Old|L], Old, New, [New|R]) :-
+    Old \= New,
+    substitute(L, Old, New, R).
+substitute([H|L], Old, New, [H|R]) :-
+    H \= Old,
+    substitute(L, Old, New, R).
+
+unescape(I, S) :-
+    atom_chars(I, Chars),
+    substitute(Chars, '_', ' ', NChars),
+    string_chars(S, NChars).
+
+escape(S, I) :-
+    string_chars(S, Chars),
+    substitute(Chars, ' ', '_', NChars),
+    atom_chars(I, NChars).
+%% end of utility functions %%
 
 % allows runtime modifications
-:- dynamic occasion/1, relationship/1, gender/1, gift/3.
+:- dynamic occasion/1, relationship/1, gender/1, gift/1, gift/2, gift/3, gift/4, gift/5, gift/6.
 
 % Define types of occasions
 occasion(birthday).
@@ -30,25 +77,27 @@ budget(101, 1000, mmm).
 budget(mmmm).
 
 % Define possible gifts for each occasion and relationship
-gift([birthday, friend], 'a personalized mug').
-gift([birthday, family], 'a custom photo album').
-gift([birthday, colleague], 'a Prolog project list').
-gift([birthday, partner], 'a weekend getaway').
+gift(birthday, friend, 'a personalized mug').
+gift(birthday, family, 'a custom photo album').
+gift(birthday, colleague, 'a Prolog project list').
+gift(birthday, partner, 'a weekend getaway').
 
-gift([anniversary, friend], '15 pieces of mcdonalds nuggets').
-gift([anniversary, family], 'a family outing').
-gift([anniversary, colleague], 'a Prolog quiz review session').
-gift([anniversary, partner], 'a spa retreat').
+gift(anniversary, friend, '15 pieces of mcdonalds nuggets').
+gift(anniversary, family, 'a family outing').
+gift(anniversary, colleague, 'a Prolog quiz review session').
+gift(anniversary, partner, 'a spa retreat').
 
-gift([new_year, friend], 'a box of cereal').
-gift([new_year, family], 'cooking a dish for your family').
-gift([new_year, colleague], 'a website showcasing your prolog project').
-gift([new_year, partner], 'a watch').
+gift(new_year, friend, 'a box of cereal').
+gift(new_year, family, 'cooking a dish for your family').
+gift(new_year, colleague, 'a website showcasing your prolog project').
+gift(new_year, partner, 'a watch').
 
-gift([christmas, friend], 'a ps5').
-gift([christmas, family], 'a holiday-themed puzzle').
-gift([christmas, colleague], 'a CPSC 312 sticker').
-gift([christmas, partner], 'a handwoven scarf').
+gift(christmas, friend, 'a ps5').
+gift(christmas, family, 'a holiday-themed puzzle').
+gift(christmas, colleague, 'a CPSC 312 sticker').
+gift(christmas, partner, 'a handwoven scarf').
+
+gift("cash").
 
 % dynamically unifies all items under `Category` to `Items`.
 all_items(Category, Items) :- all_items(Category, [], Items).
@@ -59,25 +108,6 @@ all_items(Category, U, [I|Items]) :-
     all_items(Category, [I|U], Items).
 all_items(_, _, []).
 
-substitute([], _, _, []).
-substitute(_, C, C, _).
-substitute([Old|L], Old, New, [New|R]) :-
-    Old \= New,
-    substitute(L, Old, New, R).
-substitute([H|L], Old, New, [H|R]) :-
-    H \= Old,
-    substitute(L, Old, New, R).
-
-unescape(I, S) :-
-    atom_chars(I, Chars),
-    substitute(Chars, '_', ' ', NChars),
-    string_chars(S, NChars).
-
-escape(S, I) :-
-    string_chars(S, Chars),
-    substitute(Chars, ' ', '_', NChars),
-    atom_chars(I, NChars).
-
 print_serialized_items(Items) :- print_serialized_items(Items, 1).
 print_serialized_items([], _) :- write("0: other (Please specify)"), nl.
 print_serialized_items([I|Items], N) :-
@@ -85,7 +115,6 @@ print_serialized_items([I|Items], N) :-
     format("~w: ~w", [N, U]), nl,
     M is N + 1,
     print_serialized_items(Items, M).
-
 
 % prints the prompt for `Category`
 print_category_prompt(Category, Items) :-
@@ -125,32 +154,59 @@ prompt_categories([Category|Cs], [Answer|As]) :-
     prompt_category(Category, Answer),
     prompt_categories(Cs, As).
 
+% Pretty-prints the given category items
 conditions([C], [A]) :-
     format("the ~w is ~w", [C, A]).
 conditions([C1, C2], [A1, A2]) :-
-    format("the ~w is ~w, and the ~w is ~w", [C1, A1, C2, A2]).
+    format("the ~w is ~w and the ~w is ~w", [C1, A1, C2, A2]).
 conditions([C|Categories], [A|Answers]) :-
     format("the ~w is ~w, ", [C, A]),
     conditions(Categories, Answers).
 
-% Define a rule to recommend a gift based on occasion and relationship
+% Define a rule to recommend a gift based on category choices
 recommend_gift(Categories, Answers) :-
-    gift(Answers, Gift),
-    write("The Gift for "),
+    G =.. [gift|Answers],
+    catch(call(G, Gift), _, fail),
+    write("The Gift when "),
     conditions(Categories, Answers),
     format(" is ~w.~n", [Gift]).
 
-% Attempts to recommend an alternative gift if no exact gift was found
+% Recommends a more general gift if no exact gift was found
 recommend_gift(Categories, Answers) :-
-    format("There is no exact gift for "),
-    conditions(Categories, Answers), write("."), nl,
-    recommend_alternative_gifts(Categories, Answers, []).
+    format("There is no exact gift when "),
+    conditions(Categories, Answers), write("."), nl, !,
+    recommend_general_gifts(Categories, Answers).
+
+% The category items of each general gift is a strict sublist of the given category items
+recommend_general_gifts(Categories, Answers) :-
+    zip(Categories, Answers, Tuples),
+    all_strict_sublists(Tuples, [_|AllTuples]),
+    recommend_general_gifts_h(AllTuples).
+
+recommend_general_gifts_h([]).
+recommend_general_gifts_h([Tuples|_]) :-
+    unzip(Tuples, Categories, Answers),
+    G =.. [gift|Answers],
+    catch(call(G, Gift), _, fail),
+    format("A more general gift when "),
+    conditions(Categories, Answers),
+    format(" is ~w.~n", [Gift]).
+% TODO: iterate through all other recommendations?
+
+recommend_general_gifts_h([_|AllTuples]) :-
+    recommend_general_gifts_h(AllTuples).
+
+% the category items (A) of each alternative gift overlap with the given category items (C)
+% i.e. A ∩ C ≠ ∅, A ≠ C
+% FIXME: Stub
+recommend_alternative_gifts().
 
 recommend_alternative_gifts([], [], _).
 % found an alternative gift
 recommend_alternative_gifts(Categories, Answers, _) :-
-    gift(Answers, Gift),
-    write("An alternative gift for "),
+    G =.. [gift|Answers],
+    call(G, Gift),
+    write("An alternative gift when "),
     conditions(Categories, Answers),
     format(" is ~w.~n", [Gift]).
 % TODO: implements recursive fuzzy match
@@ -163,9 +219,12 @@ recommend_alternative_gifts([C|Categories], [A|Answers], Tried) :-
 % category exhausted, strips it and move on to the following category
 recommend_alternative_gifts([_|Categories], [_|Answers], _) :-
     recommend_alternative_gifts(Categories, Answers, []).
+% category exhausted, strips it and move on to the following category
+recommend_alternative_gifts([_|Categories], [_|Answers], _) :-
+    recommend_alternative_gifts(Categories, Answers, []).
 
 recommend :-
-    recommend([gender, occasion, relationship]).
+    recommend([occasion, relationship, gender]).
 
 recommend(Categories) :-
     prompt_categories(Categories, Answers),
