@@ -17,7 +17,6 @@ relationship(partner).
 
 gender(male).
 gender(female).
-gender(others).
 
 age_group(0, 12, kid).
 age_group(13, 18, teen).
@@ -53,32 +52,71 @@ gift(christmas, partner, 'a handwoven scarf').
 
 % dynamically unifies all items under `Category` to `Items`.
 all_items(Category, Items) :- all_items(Category, [], Items).
-all_items(Category, U, [I|Items]) :-    
+all_items(Category, U, [I|Items]) :-
     call(Category, I),
-    \+ member(I, U),        
+    \+ member(I, U),
     !,
     all_items(Category, [I|U], Items).
 all_items(_, _, []).
 
-% FIXME: may change to a selection menu
+substitute([], _, _, []).
+substitute(_, C, C, _).
+substitute([Old|L], Old, New, [New|R]) :-
+    Old \= New,
+    substitute(L, Old, New, R).
+substitute([H|L], Old, New, [H|R]) :-
+    H \= Old,
+    substitute(L, Old, New, R).
+
+unescape(I, S) :-
+    atom_chars(I, Chars),
+    substitute(Chars, '_', ' ', NChars),
+    string_chars(S, NChars).
+
+escape(S, I) :-
+    string_chars(S, Chars),
+    substitute(Chars, ' ', '_', NChars),
+    atom_chars(I, NChars).
+
+print_serialized_items(Items) :- print_serialized_items(Items, 1).
+print_serialized_items([], _) :- write("0: other (Please specify)"), nl.
+print_serialized_items([I|Items], N) :-
+    unescape(I, U),
+    format("~w: ~w", [N, U]), nl,
+    M is N + 1,
+    print_serialized_items(Items, M).
+
+
 % prints the prompt for `Category`
-print_category_prompt(Category) :-
+print_category_prompt(Category, Items) :-
+    format("Choose the ~w by its number: (e.g. 1)~n", [Category]),
     all_items(Category, Items),
-    atomic_list_concat(Items, ", ", Atom),            
-    format("Enter the ~w (~w):", [Category, Atom]), nl.
+    print_serialized_items(Items).
 
 % prompts user to choose a valid instance of `Category`
-% which will be unified to `Result`
-prompt_category(Category, Result) :-
-    print_category_prompt(Category),
-    prompt_category_h(Category, yes(Result)).
+% which will be unified to `Item`
+prompt_category(Category, Item) :-
+    print_category_prompt(Category, Items),
+    prompt_category_h(Category, Items, Item),
+    unescape(Item, U),
+    format("Ok, the ~w is ~w.~n", [Category, U]).
 
-prompt_category_h(Category, yes(Input)) :-    
+get_item(Category, _, 0, Item) :-
+    format("Specify the ~w:~n", [Category]),
     read(Input),
-    call(Category, Input).
-prompt_category_h(Category, Result) :- 
-    format("Please enter a valid ~w:", [Category]), nl,
-    prompt_category_h(Category, Result).
+    escape(Input, Item).
+get_item(Category, Items, N, Item) :-
+    integer(N),
+    M is N - 1,
+    nth0(M, Items, Item),
+    call(Category, Item).
+
+prompt_category_h(Category, Items, Item) :-
+    read(Input),
+    get_item(Category, Items, Input, Item).
+prompt_category_h(Category, Items, Item) :-
+    format("Enter a valid number for the ~w:~n", [Category]),
+    prompt_category_h(Category, Items, Item).
 
 
 % Define a rule to recommend a gift based on occasion and relationship
@@ -97,7 +135,7 @@ recommend :-
     (recommend_gift(O, R, Gift) ->
         write("Recommendation: "), write(Gift), nl
     ;
-        write("No gift found, please enter valid occasion and relationship."), nl
+        format("There is no exact gift when the occasion is ~w and the relationship is ~w.~n", [O, R])
     ).
 
 
