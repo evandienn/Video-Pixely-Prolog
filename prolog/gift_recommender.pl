@@ -30,25 +30,25 @@ budget(101, 1000, mmm).
 budget(mmmm).
 
 % Define possible gifts for each occasion and relationship
-gift(birthday, friend, 'a personalized mug').
-gift(birthday, family, 'a custom photo album').
-gift(birthday, colleague, 'a Prolog project list').
-gift(birthday, partner, 'a weekend getaway').
+gift([birthday, friend], 'a personalized mug').
+gift([birthday, family], 'a custom photo album').
+gift([birthday, colleague], 'a Prolog project list').
+gift([birthday, partner], 'a weekend getaway').
 
-gift(anniversary, friend, '15 pieces of mcdonalds nuggets').
-gift(anniversary, family, 'a family outing').
-gift(anniversary, colleague, 'a Prolog quiz review session').
-gift(anniversary, partner, 'a spa retreat').
+gift([anniversary, friend], '15 pieces of mcdonalds nuggets').
+gift([anniversary, family], 'a family outing').
+gift([anniversary, colleague], 'a Prolog quiz review session').
+gift([anniversary, partner], 'a spa retreat').
 
-gift(new_year, friend, 'a box of cereal').
-gift(new_year, family, 'cooking a dish for your family').
-gift(new_year, colleague, 'a website showcasing your prolog project').
-gift(new_year, partner, 'a watch').
+gift([new_year, friend], 'a box of cereal').
+gift([new_year, family], 'cooking a dish for your family').
+gift([new_year, colleague], 'a website showcasing your prolog project').
+gift([new_year, partner], 'a watch').
 
-gift(christmas, friend, 'a ps5').
-gift(christmas, family, 'a holiday-themed puzzle').
-gift(christmas, colleague, 'a CPSC 312 sticker').
-gift(christmas, partner, 'a handwoven scarf').
+gift([christmas, friend], 'a ps5').
+gift([christmas, family], 'a holiday-themed puzzle').
+gift([christmas, colleague], 'a CPSC 312 sticker').
+gift([christmas, partner], 'a handwoven scarf').
 
 % dynamically unifies all items under `Category` to `Items`.
 all_items(Category, Items) :- all_items(Category, [], Items).
@@ -104,6 +104,7 @@ prompt_category(Category, Item) :-
 get_item(Category, _, 0, Item) :-
     format("Specify the ~w:~n", [Category]),
     read(Input),
+    !,
     escape(Input, Item).
 get_item(Category, Items, N, Item) :-
     integer(N),
@@ -113,31 +114,64 @@ get_item(Category, Items, N, Item) :-
 
 prompt_category_h(Category, Items, Item) :-
     read(Input),
+    !,
     get_item(Category, Items, Input, Item).
 prompt_category_h(Category, Items, Item) :-
     format("Enter a valid number for the ~w:~n", [Category]),
     prompt_category_h(Category, Items, Item).
 
+prompt_categories([], []).
+prompt_categories([Category|Cs], [Answer|As]) :-
+    prompt_category(Category, Answer),
+    prompt_categories(Cs, As).
+
+conditions([C], [A]) :-
+    format("the ~w is ~w", [C, A]).
+conditions([C1, C2], [A1, A2]) :-
+    format("the ~w is ~w, and the ~w is ~w", [C1, A1, C2, A2]).
+conditions([C|Categories], [A|Answers]) :-
+    format("the ~w is ~w, ", [C, A]),
+    conditions(Categories, Answers).
 
 % Define a rule to recommend a gift based on occasion and relationship
-recommend_gift(O, R, Gift) :-
-    occasion(O),
-    relationship(R),
-    gift(O, R, Gift).
+recommend_gift(Categories, Answers) :-
+    gift(Answers, Gift),
+    write("The Gift for "),
+    conditions(Categories, Answers),
+    format(" is ~w.~n", [Gift]).
 
+% Attempts to recommend an alternative gift if no exact gift was found
+recommend_gift(Categories, Answers) :-
+    format("There is no exact gift for "),
+    conditions(Categories, Answers), write("."), nl,
+    recommend_alternative_gifts(Categories, Answers, []).
+
+recommend_alternative_gifts([], [], _).
+% found an alternative gift
+recommend_alternative_gifts(Categories, Answers, _) :-
+    gift(Answers, Gift),
+    write("An alternative gift for "),
+    conditions(Categories, Answers),
+    format(" is ~w.~n", [Gift]).
+% TODO: implements recursive fuzzy match
+% exhausts a category for alternative items
+recommend_alternative_gifts([C|Categories], [A|Answers], Tried) :-
+    call(C, Answer),
+    A \= Answer,
+    \+ member(tried(C, Answer), Tried),
+    recommend_alternative_gifts([C|Categories], [Answer|Answers], [tried(C, Answer)|Tried]).
+% category exhausted, strips it and move on to the following category
+recommend_alternative_gifts([_|Categories], [_|Answers], _) :-
+    recommend_alternative_gifts(Categories, Answers, []).
 
 recommend :-
-    prompt_category(occasion, O),
-    prompt_category(relationship, R),
-    prompt_category(gender, Gender),
+    recommend([gender, occasion, relationship]).
+
+recommend(Categories) :-
+    prompt_categories(Categories, Answers),
     % TODO: prompt for age_group, e.g. "how old are they?"
     % TODO: prompt for budget
-    (recommend_gift(O, R, Gift) ->
-        write("Recommendation: "), write(Gift), nl
-    ;
-        format("There is no exact gift when the occasion is ~w and the relationship is ~w.~n", [O, R])
-    ).
-
+    recommend_gift(Categories, Answers).
 
 % Sample query
 % ?- recommend.
