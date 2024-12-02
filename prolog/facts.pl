@@ -1,5 +1,5 @@
-:- module(facts, [occasion/1, relationship/1, gender/1, age_group/3, budget/3, gift/1, gift/6]).
-:- dynamic occasion/1, relationship/1, gender/1, gift/1, gift/6.
+:- module(facts, [occasion/1, relationship/1, gender/1, age_group/3, budget/3, gift/1, gift/2, gift/3, gift/6]).
+:- dynamic occasion/1, relationship/1, gender/1, gift/1, gift/2, gift/3, gift/6.
 
 % Define types of occasions
 occasion(birthday).
@@ -56,6 +56,24 @@ gift(christmas, friend, any, teenager, high, 'a PS5').
 gift(christmas, family, any, child, medium, 'a holiday-themed puzzle').
 gift(christmas, colleague, any, adult, low, 'a CPSC 312 sticker').
 gift(christmas, partner, any, middle_aged, medium, 'a handwoven scarf').
+
+% General gifts for occasions
+gift(birthday, any, 'a birthday card').
+gift(anniversary, any, 'a bouquet of flowers').
+gift(new_year, any, 'a box of chocolates').
+gift(christmas, any, 'a holiday ornament').
+
+% General gifts for relationships
+gift(any, friend, 'a photo frame').
+gift(any, family, 'a board game').
+gift(any, colleague, 'a desk organizer').
+gift(any, partner, 'a handwritten letter').
+
+% Gifts by occasion only
+gift(birthday, 'a custom birthday cake').
+gift(anniversary, 'a romantic dinner voucher').
+gift(new_year, 'a festive fireworks kit').
+gift(christmas, 'a cozy holiday sweater').
 
 % Most general gift (Worst Gift)
 gift("cash").
