@@ -3,32 +3,17 @@
 :- use_module(utilities).
 :- use_module(facts).
 :- use_module(alternative_gifts).
+:- use_module(new_gifts).
+:- use_module(menu).
 
-% dynamically unifies all items under `Category` to `Items`.
-all_items(Category, Items) :- all_items(Category, [], Items).
-all_items(Category, U, [I|Items]) :-
-    call(Category, I),
-    \+ member(I, U),
-    !,
-    all_items(Category, [I|U], Items).
-all_items(_, _, []).
-
-print_serialized_items(Items) :- print_serialized_items(Items, 1).
-print_serialized_items([], _) :- write("0: other (Please specify)"), nl.
-print_serialized_items([I|Items], N) :-
-    unescape(I, U),
-    format("~w: ~w", [N, U]), nl,
-    M is N + 1,
-    print_serialized_items(Items, M).
-
-% prints the prompt for `Category`
+%! prints the prompt for Category
 print_category_prompt(Category, Items) :-
     format("Choose the ~w by its number: (e.g. 1)~n", [Category]),
     all_items(Category, Items),
-    print_serialized_items(Items).
+    print_serialized_items(Items, "other (please specify)").
 
-% prompts user to choose a valid instance of `Category`
-% which will be unified to `Item`
+%! prompts user to choose a valid instance of `Category`
+%  which will be unified to `Item`
 prompt_category(Category, Item) :-
     print_category_prompt(Category, Items),
     format(string(Question), "Enter a valid number for the ~w:~n", [Category]),
@@ -98,14 +83,13 @@ recommend_general_gifts_h([_|AllTuples]) :-
     recommend_general_gifts_h(AllTuples).
 
 recommend :-
-    recommend([occasion, relationship, gender]).
+    menu([recommend, new_gift], [occasion, relationship, gender]).
 
 recommend(Categories) :-
     prompt_categories(Categories, Answers),
     % TODO: prompt for age_group, e.g. "how old are they?"
     % TODO: prompt for budget
-    recommend_gift(Categories, Answers),
-    recommend(Categories).
+    recommend_gift(Categories, Answers).
 
 % Sample query
 % ?- recommend.
