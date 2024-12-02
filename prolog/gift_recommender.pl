@@ -1,70 +1,6 @@
 % Gifterly
 
-%% utility functions %%
-zip([], _, []).
-zip(_, [], []).
-zip([X|Xs], [Y|Ys], [(X,Y)|Zs]) :- zip(Xs, Ys, Zs).
-
-unzip([], [], []).
-unzip([(X,Y)|Zs], [X|Xs], [Y|Ys]) :- unzip(Zs, Xs, Ys).
-
-compare_by_length_then_intrinsic(Delta, Sub1, Sub2) :-
-    length(Sub1, Len1), length(Sub2, Len2),
-    ( Len1 < Len2 -> Delta = '>'
-    ; Len1 > Len2 -> Delta = '<'
-    ; compare(Delta, Sub2, Sub1)
-    ).
-
-all_strict_sublists(List, SubLists) :-
-    all_strict_sublists([], List, Unsorted),
-    predsort(compare_by_length_then_intrinsic, Unsorted, SubLists).
-
-all_strict_sublists(Prefix, [H|List], SubLists) :-
-    append(Prefix, [H], Prefix2),
-    all_strict_sublists(Prefix, List, SubLists1),
-    all_strict_sublists(Prefix2, List, SubLists2),
-    append(SubLists1, SubLists2, SubLists).
-
-all_strict_sublists(Prefix, [], [Prefix]).
-
-substitute([], _, _, []).
-substitute(_, C, C, _).
-substitute([Old|L], Old, New, [New|R]) :-
-    Old \= New,
-    substitute(L, Old, New, R).
-substitute([H|L], Old, New, [H|R]) :-
-    H \= Old,
-    substitute(L, Old, New, R).
-
-unescape(I, S) :-
-    atom_chars(I, Chars),
-    substitute(Chars, '_', ' ', NChars),
-    string_chars(S, NChars).
-
-escape(S, I) :-
-    string_chars(S, Chars),
-    substitute(Chars, ' ', '_', NChars),
-    atom_chars(I, NChars).
-
-read_str(String) :-
-    read_string(user_input, "\n", "\r\t ", _, String).
-
-read_number(_, No) :-
-    read_str(Input),
-    atom_number(Input, No).
-read_number(Question, No) :-
-    write(Question),
-    read_number(Question, No).
-
-get_yes_or_no(YesOrNo) :-
-    read_str(YN),
-    string_lower(YN, LYN),
-    (
-      LYN = "yes" -> YesOrNo = yes
-    ; LYN = "no" -> YesOrNo = no
-    ; write("Please enter yes or no."), nl, get_yes_or_no(YesOrNo)
-    ).
-%% end of utility functions %%
+:- use_module(utilities).
 
 % Define types of occasions
 occasion(birthday).
@@ -193,7 +129,7 @@ print_with_category_items([C|Categories], [A|Answers]) :-
 % Define a rule to recommend a gift based on category choices
 recommend_gift(Categories, Answers) :-
     G =.. [gift|Answers],
-    catch(call(G, Gift), _, fail),
+    graceful_call(G, Gift),
     print_with_category_items("The Gift", Categories, Answers),
     format(" is ~w.~n", [Gift]).
 
@@ -212,7 +148,7 @@ recommend_general_gifts_h([]).
 recommend_general_gifts_h([Tuples|_]) :-
     unzip(Tuples, Categories, Answers),
     G =.. [gift|Answers],
-    catch(call(G, Gift), _, fail),
+    graceful_call(G, Gift),
     print_with_category_items("A more general gift", Categories, Answers),
     format(" is ~w.~n", [Gift]).
 % TODO: iterate through all other recommendations?
@@ -229,13 +165,13 @@ recommend_alternative_gifts([], [], _).
 % found an alternative gift
 recommend_alternative_gifts(Categories, Answers, _) :-
     G =.. [gift|Answers],
-    call(G, Gift),
+    graceful_call(G, Gift),
     print_with_category_items("An alternative gift", Categories, Answers),
     format(" is ~w.~n", [Gift]).
 % TODO: implements recursive fuzzy match
 % exhausts a category for alternative items
 recommend_alternative_gifts([C|Categories], [A|Answers], Tried) :-
-    call(C, Answer),
+    graceful_call(C, Answer),
     A \= Answer,
     \+ member((C, Answer), Tried),
     recommend_alternative_gifts([C|Categories], [Answer|Answers], [(C, Answer)|Tried]).
