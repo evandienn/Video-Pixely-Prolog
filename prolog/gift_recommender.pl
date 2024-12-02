@@ -115,14 +115,16 @@ recommend_general_gifts(Categories, Answers) :-
     all_strict_sublists(Tuples, [_|AllTuples]),
     recommend_general_gifts_h(AllTuples).
 
-recommend_general_gifts_h([]).
-recommend_general_gifts_h([Tuples|_]) :-
+recommend_general_gifts_h([]).  % Base case: no more recommendations to process
+recommend_general_gifts_h([Tuples|AllTuples]) :-
     unzip(Tuples, Categories, Answers),
     G =.. [gift|Answers],
-    graceful_call(G, Gift),
-    print_with_category_items("A more general gift", Categories, Answers),
-    format(" is ~w.~n", [Gift]).
-% TODO: iterate through all other recommendations?
+    ( catch(call(G, Gift), _, fail) ->  % If a gift is found
+        print_with_category_items("A more general gift", Categories, Answers),
+        format(" is ~w.~n", [Gift])
+    ; true  % If no gift is found, continue to the next tuple
+    ),
+    recommend_general_gifts_h(AllTuples).  % Process the next recommendation
 
 recommend_general_gifts_h([_|AllTuples]) :-
     recommend_general_gifts_h(AllTuples).
