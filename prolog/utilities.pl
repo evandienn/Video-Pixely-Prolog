@@ -8,7 +8,8 @@
         escape/2,
         read_str/1,
         read_number/2,
-        get_yes_or_no/1
+        get_yes_or_no/1,
+        print_with_category_items/3
     ]).
 
 graceful_call(Goal, A) :- catch(call(Goal, A), _, fail).
@@ -76,3 +77,16 @@ get_yes_or_no(YesOrNo) :-
     ; LYN = "no" -> YesOrNo = no
     ; write("Please enter yes or no."), nl, get_yes_or_no(YesOrNo)
     ).
+
+% Pretty-prints the given category items
+print_with_category_items(Prefix, [], []) :- write(Prefix).
+print_with_category_items(Prefix, Categories, Answers) :-
+    write(Prefix), write(" when "),
+    print_with_category_items(Categories, Answers).
+print_with_category_items([C], [A]) :-
+    format("the ~w is ~w", [C, A]).
+print_with_category_items([C1, C2], [A1, A2]) :-
+    format("the ~w is ~w and the ~w is ~w", [C1, A1, C2, A2]).
+print_with_category_items([C|Categories], [A|Answers]) :-
+    format("the ~w is ~w, ", [C, A]),
+    print_with_category_items(Categories, Answers).
