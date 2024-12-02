@@ -22,11 +22,35 @@ print_serialized_items([I|Items], N) :-
     print_serialized_items(Items, M).
 
 % prints the prompt for `Category`
+print_category_prompt(age_group, Items) :-
+    findall((Start, End, Category), age_group(Start, End, Category), AgeGroups),
+    format("Choose the age group by its number: (e.g. 1)~n", []),
+    print_age_groups(AgeGroups, 1, Items).
+
+print_category_prompt(budget, Items) :-
+    findall((Start, End, Category), budget(Start, End, Category), Budgets),
+    format("Choose the budget by its number: (e.g. 1)~n", []),
+    print_budgets(Budgets, 1, Items).
+
+% Fallback for other categories
 print_category_prompt(Category, Items) :-
     format("Choose the ~w by its number: (e.g. 1)~n", [Category]),
     all_items(Category, Items),
     print_serialized_items(Items).
 
+% Print age groups
+print_age_groups([], _, []) :- write("0: other (Please specify)"), nl.
+print_age_groups([(Start, End, Category) | AgeGroups], N, [Category | Items]) :-
+    format("~w: ~w (~w - ~w years)~n", [N, Category, Start, End]),
+    M is N + 1,
+    print_age_groups(AgeGroups, M, Items).
+
+% Print budgets
+print_budgets([], _, []) :- write("0: other (Please specify)"), nl.
+print_budgets([(Start, End, Category) | Budgets], N, [Category | Items]) :-
+    format("~w: ~w ($~w - $~w)~n", [N, Category, Start, End]),
+    M is N + 1,
+    print_budgets(Budgets, M, Items).
 % prompts user to choose a valid instance of `Category`
 % which will be unified to `Item`
 prompt_category(Category, Item) :-
@@ -56,9 +80,15 @@ get_item(Category, _, 0, Item) :-
     read_str(Input),
     escape(Input, Item),
     prompt_assert_if_absent(Category, Input, Item).
+
+get_item(age_group, Items, N, Item) :-
+    nth1(N, Items, Item).
+
+get_item(budget, Items, N, Item) :-
+    nth1(N, Items, Item).
+
 get_item(Category, Items, N, Item) :-
-    M is N - 1,
-    nth0(M, Items, Item),
+    nth1(N, Items, Item),
     call(Category, Item).
 
 prompt_categories([], []).
@@ -98,12 +128,10 @@ recommend_general_gifts_h([_|AllTuples]) :-
     recommend_general_gifts_h(AllTuples).
 
 recommend :-
-    recommend([occasion, relationship, gender]).
+    recommend([occasion, relationship, gender, age_group, budget]).
 
 recommend(Categories) :-
     prompt_categories(Categories, Answers),
-    % TODO: prompt for age_group, e.g. "how old are they?"
-    % TODO: prompt for budget
     recommend_gift(Categories, Answers),
     recommend(Categories).
 
