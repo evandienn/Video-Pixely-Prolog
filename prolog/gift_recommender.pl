@@ -7,45 +7,23 @@
 :- use_module(new_gifts).
 :- use_module(menu).
 
-%! prints the prompt for Category
-print_category_prompt(age_group, Items) :-
-    findall([Start, End, Category], age_group(Start, End, Category), AgeGroups),
-    format("Choose the age group by its number: (e.g. 1)~n", []),
-    print_age_groups(AgeGroups, 1, Items).
-
-print_category_prompt(budget, Items) :-
-    findall([Start, End, Category], budget(Start, End, Category), Budgets),
-    format("Choose the budget by its number: (e.g. 1)~n", []),
-    print_budgets(Budgets, 1, Items).
-
 % Fallback for other categories
-print_category_prompt(Category, Items) :-
+print_category_prompt(Category/N, Items) :-
     format("Choose the ~w by its number: (e.g. 1)~n", [Category]),
-    all_items(Category, Items),
-    print_serialized_items(Items, "other (please specify)").
-
-% Print age groups
-print_age_groups([], _, []).
-print_age_groups([[Start, End, Category] | AgeGroups], N, [Category | Items]) :-
-    unescape_format("~w: ~w (~w - ~w years)~n", [N, Category, Start, End]),
-    M is N + 1,
-    print_age_groups(AgeGroups, M, Items).
-
-% Print budgets
-print_budgets([], _, []).
-print_budgets([[Start, End, Category] | Budgets], N, [Category | Items]) :-
-    format("~w: ~w ($~w - $~w)~n", [N, Category, Start, End]),
-    M is N + 1,
-    print_budgets(Budgets, M, Items).
+    all_items(Category/N, Items),
+    display_format(Category, Format),
+    print_serialized_items(Items, none, "other (please specify)", Format).
 
 % prompts user to choose a valid instance of `Category`
 % which will be unified to `Item`
-prompt_category(Category, Item) :-
-    print_category_prompt(Category, Items),
+prompt_category(Category/N, Item) :-
+    print_category_prompt(Category/N, Items),
     format(string(Question), "Enter a valid number for the ~w:~n", [Category]),
     read_number(Question, ItemNo),
     get_item(Category, Items, ItemNo, Item),
-    unescape_format("Ok, the ~w is ~w.~n", [Category, Item]).
+    display_format(Category, Format),
+    format(string(Formatted), Format, Item),
+    unescape_format("Ok, the ~w is ~w.~n", [Category, Formatted]).
 
 prompt_assert_if_absent(Category, _, Item) :-
     C =.. [Category, Item],
@@ -67,15 +45,8 @@ get_item(Category, _, 0, Item) :-
     escape(Input, Item),
     prompt_assert_if_absent(Category, Input, Item).
 
-get_item(age_group, Items, N, Item) :-
+get_item(_, Items, N, Item) :-
     nth1(N, Items, Item).
-
-get_item(budget, Items, N, Item) :-
-    nth1(N, Items, Item).
-
-get_item(Category, Items, N, Item) :-
-    nth1(N, Items, Item),
-    call(Category, Item).
 
 prompt_categories([], []).
 prompt_categories([Category|Cs], [Answer|As]) :-
@@ -85,7 +56,8 @@ prompt_categories([Category|Cs], [Answer|As]) :-
 
 % Define a rule to recommend a gift based on category choices
 recommend_gift(Categories, Answers) :-
-    G =.. [gift|Answers],
+    heads_only(Answers, Hs),
+    G =.. [gift|Hs],
     graceful_call(G, Gift),
     print_with_category_items("The Gift", Categories, Answers),
     format(" is ~w.~n", [Gift]).
@@ -96,7 +68,7 @@ recommend_gift(Categories, Answers) :-
     recommend_general_gifts(Categories, Answers).
 
 recommend :-
-    menu([recommend, new_gift], [occasion, relationship, gender, age_group, budget]).
+    menu([recommend, new_gift], [occasion/1, relationship/1, gender/1, age_group/3, budget/3]).
 
 recommend(Categories) :-
     prompt_categories(Categories, Answers),

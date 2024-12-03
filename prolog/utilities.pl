@@ -15,11 +15,14 @@
         print_serialized_items/1,
         print_serialized_items/2,
         print_serialized_items/3,
+        print_serialized_items/4,
         all_items/2,
         ordered_map_put/7,
         map_get/4,
-        map_unset/5
+        map_unset/5,
+        heads_only/2
     ]).
+:- use_module(facts).
 
 %! graceful_call(+Goal, -V)
 %
@@ -120,6 +123,9 @@ get_yes_or_no(YesOrNo) :-
     ; write("Please enter yes or no."), nl, get_yes_or_no(YesOrNo)
     ).
 unescape_list([], []).
+unescape_list([is_list(Arg)|Args], [UArg|UArgs]) :-
+    unescape_list(Arg, UArg),
+    unescape_list(Args, UArgs).
 unescape_list([Arg|Args], [UArg|UArgs]) :-
     unescape(Arg, UArg),
     unescape_list(Args, UArgs).
@@ -135,12 +141,20 @@ print_with_category_items(Prefix, [], []) :-
 print_with_category_items(Prefix, Categories, Answers) :-
     write(Prefix), write(" when "),
     print_with_category_items(Categories, Answers).
-print_with_category_items([C], [V]) :-
-    unescape_format("the ~w is ~w", [C, V]).
-print_with_category_items([K1, C2], [V1, A2]) :-
-    unescape_format("the ~w is ~w and the ~w is ~w", [K1, V1, C2, A2]).
-print_with_category_items([C|Categories], [V|Answers]) :-
-    unescape_format("the ~w is ~w, ", [C, V]),
+print_with_category_items([C/_], [A]) :-
+    display_format(C, Format),
+    format(string(Formatted), Format, A),
+    unescape_format("the ~w is ~w", [C, Formatted]).
+print_with_category_items([C1/_, C2/_], [A1, A2]) :-
+    display_format(C1, Format1),
+    format(string(Formatted1), Format1, A1),
+    display_format(C2, Format2),
+    format(string(Formatted2), Format2, A2),
+    unescape_format("the ~w is ~w and the ~w is ~w", [C1,Formatted1,C2,Formatted2]).
+print_with_category_items([C/_|Categories], [A|Answers]) :-
+    display_format(C, Format),
+    format(string(Formatted), Format, A),
+    unescape_format("the ~w is ~w, ", [C, Formatted]),
     print_with_category_items(Categories, Answers).
 
 %! print_serialized_items(+Items)
@@ -158,45 +172,65 @@ print_serialized_items(Items, Item0) :-
 %
 % prints an extra line at the end if Item0 \= none
 print_serialized_items(Items, Selected, Item0) :-
-    print_serialized_items(Items, Selected, 1, Item0).
-print_serialized_items([], _, _, none).
-print_serialized_items([], _, _, Item0) :-
+    print_serialized_items(Items, Selected, Item0, "~w").
+print_serialized_items(Items, Selected, Item0, Format0) :-
+    string_concat("~w: ", Format0, Format),
+    print_serialized_items(Items, Selected, Item0, Format, 1).
+print_serialized_items([], _, none, _, _).
+print_serialized_items([], _, Item0, _, _) :-
     Item0 \= none,
     format("0: ~w~n", [Item0]).
-print_serialized_items([I|Items], Selected, N, Item0) :-
-    unescape(I, U),
+print_serialized_items([I|Items], Selected, Item0, Format, N) :-
+    \+ is_list(I),
+    print_serialized_items([[I]|Items], Selected, Item0, Format, N).
+print_serialized_items([I|Items], Selected, Item0, Format, N) :-
+    unescape_format(Format, [N|I]),
     (
-        I = Selected -> format("~w: ~w ✔️ ~n", [N, U])
-        ; format("~w: ~w~n", [N, U])
+        I = Selected -> write(" ✔️ "), nl
+        ; nl
     ),
     M is N + 1,
-    print_serialized_items(Items, Selected, M, Item0).
+    print_serialized_items(Items, Selected, Item0, Format, M).
 
 %! all_items(+Category, -Items)
 % dynamically unifies all items under Category to Items
-all_items(Category, Items) :- all_items(Category, [], Items).
-all_items(Category, U, [I|Items]) :-
-    C =.. [Category, I],
-    call(C),
+all_items(Category/N, Items) :- all_items(Category/N, [], Items).
+all_items(Category/N, U, [I|Items]) :-
+    goal_n_arity(Category/N, I, Goal),
+    call(Goal),
     \+ member(I, U),
     !,
-    all_items(Category, [I|U], Items).
+    all_items(Category/N, [I|U], Items).
 all_items(_, _, []).
 
+heads_only([], []).
+heads_only([[H|_]|List], [H|Heads]) :-
+    heads_only(List, Heads).
+
+goal_n_arity(Category/N, Terms, Goal) :-
+    n_arity(N, Terms),
+    Goal =.. [Category|Terms].
+n_arity(0, []).
+n_arity(N, [_|Terms]) :-
+    N > 0,
+    M is N - 1,
+    n_arity(M, Terms).
 
 ordered_map_put(_, K, V, [], [], [K], [V]).
 ordered_map_put([K|_], K, V, [K|Ks], [_|Vs], [K|Ks], [V|Vs]).
 ordered_map_put([K|_], K, V, [K0|Ks], Vs, [K,K0|Ks], [V|Vs]) :- K \= K0.
-ordered_map_put([K0|KOrder], K, V, [K0|Ks0], [V0|Vs0], [K0|Ks], [V0|Vs]) :-
-    K \= K0,
-    ordered_map_put(KOrder, K, V, Ks0, Vs0, Ks, Vs).
 ordered_map_put([K0|KOrder], K, V, [K1|Ks0], [V1|Vs0], [K1|Ks], [V1|Vs]) :-
-    K0 \= K1,
+    K \= K0,
+    K \= K1,
     ordered_map_put(KOrder, K, V, Ks0, Vs0, Ks, Vs).
-%! ordered_map_put(+KOrder, +K, +V, +Ks0, +Vs0, -Ks, -Vs)
-ordered_map_put(KOrder, K, V, Ks0, Vs0, Ks, Vs) :- fail.
+ordered_map_put([_|KOrder], K, V, Ks0, Vs0, Ks, Vs) :-
+    ordered_map_put(KOrder, K, V, Ks0, Vs0, Ks, Vs).
+% ordered_map_put([K0|KOrder], K, V, [K1|Ks0], [V1|Vs0], [K1|Ks], [V1|Vs]) :-
+%     K \= K0,
+%     K0 \= K1,
+%     ordered_map_put(KOrder, K, V, Ks0, Vs0, Ks, Vs).
 
-map_get(K, [K|Ks], [V|Vs], V).
+map_get(K, [K|_], [V|_], V).
 map_get(K, [K0|Ks], [_|Vs], V) :-
     K \= K0,
     map_get(K, Ks, Vs, V).
