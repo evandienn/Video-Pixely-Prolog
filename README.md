@@ -21,11 +21,7 @@ We call ourselves: Burgersssss
 
 We surely built on the work of others! Here are resources and people we got support from:
 
-+ A list of acknowledgments with a brief explanation of support received, e.g.:
-  "We used Github Copilot extensively to generate first-pass implementations of chunks of the project that we had specified.
-  We then manually adjusted and adapted these to our needs."
-
-+ We used chatGpt to generate an empty template for the gift recommender program. We then implemented categories of the different occasions and relationships and the rules for recommending the gift for the occasions and recommendations.
++ We used chatGpt to generate an empty template for the gift recommender program. We then implemented categories of the different occasions and relationships, gender, budget, etc..., and the rules for recommending the gift for the different catgeories.
 
 ## Product Pitch
 
