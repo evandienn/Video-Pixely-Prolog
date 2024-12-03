@@ -11,8 +11,9 @@ recommend_general_gifts_with_prompt([]) :-  % Base case: no more recommendations
     write("No more general gift recommendations available."), nl.
 recommend_general_gifts_with_prompt([Tuples|AllTuples]) :-
     unzip(Tuples, Categories, Answers),
-    G =.. [gift|Answers],
-    ( graceful_call(G, Gift) ->  % If a gift is found
+    heads_only(Answers, AHs),
+    Goal =.. [gift|AHs],
+    ( graceful_call(Goal, Gift) ->  % If a gift is found
         print_with_category_items("A more general gift", Categories, Answers),
         format(" is ~w.~n", [Gift]),
         write("Would you like to see more general gift recommendations? (yes/no): "), nl,
