@@ -40,26 +40,29 @@ read_option(Categories, Cs, As) :-
           new_gift(Categories, NewCs, NewAs)
     ).
 
-get_item(Category, _, 0, Item) :-
+get_item(Category/1, _, 0, Item) :-
     format("Specify the ~w:~n", [Category]),
     read_str(Input),
     escape(Input, Item).
 get_item(_, Items, N, Item) :-
-    M is N - 1,
-    nth0(M, Items, Item).
+    nth1(N, Items, Item).
 
 category_menu(Categories, C/N, Cs, As, NewCs, NewAs) :-
     format("Specify the ~w by selecting a number (e.g. 1), or leave blank to unspecify:~n", [C]),
     all_items(C/N, Items),
     display_format(C, Format),
     (
-        map_get(C/N, Cs, As, Selected) -> print_serialized_items(Items, Selected, "other (please specify)", Format)
-        ; print_serialized_items(Items, none, "other (please specify)", Format)
+        N = 1 -> Item0 = "other (please specify)"
+        ; Item0 = none
+    ),
+    (
+        map_get(C/N, Cs, As, Selected) -> print_serialized_items(Items, Selected, Item0, Format)
+        ; print_serialized_items(Items, none, Item0, Format)
     ),
     read_number_or_blank("Please choose a valid option:", NoOrBlank),
     (
         NoOrBlank = blank -> map_unset(C/N, Cs, As, NewCs, NewAs)
-        ; get_item(C, Items, NoOrBlank, Item),
+        ; get_item(C/N, Items, NoOrBlank, Item),
           ordered_map_put(Categories, C/N, Item, Cs, As, NewCs, NewAs)
     ).
 
