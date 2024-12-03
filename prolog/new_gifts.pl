@@ -6,12 +6,12 @@ suggest_new_gift(Categories) :-
     suggest_new_gift(Categories, [], []).
 suggest_new_gift(Categories, Cs, As) :-
     print_specs_and_gift(Cs, As),
-    write("Choose an option by entering its number:"), nl,
+    style_format("Choose an option by entering its number:~n", [], title),
     print_new_gift_menu(Categories),
     read_option(Categories, Cs, As).
 
 print_specs_and_gift([], []) :-
-    write("There are no specifications."), nl.
+    style_format("There are no specifications.~n", [], information).
 
 %! pretty-prints all specifications and gifts (if any)
 print_specs_and_gift(Categories, Answers) :-
@@ -21,7 +21,7 @@ print_specs_and_gift(Categories, Answers) :-
         graceful_call(G, Gift) -> Prefix = Gift
         ; Prefix = "There are no gifts"
     ),
-    print_with_category_items(Prefix, Categories, Answers), write("."), nl.
+    print_with_category_items(Prefix, Categories, Answers, ".", information), nl.
 
 specify_category(Category/_, SC) :-
     format(string(SC), "specify the ~w", Category).
@@ -41,14 +41,14 @@ read_option(Categories, Cs, As) :-
     ).
 
 get_item(Category/1, _, 0, [Item]) :-
-    format("Specify the ~w:~n", [Category]),
+    style_format("Specify the ~w:~n", [Category], specify),
     read_str(Input),
     escape(Input, Item).
 get_item(_, Items, N, Item) :-
     nth1(N, Items, Item).
 
 category_menu(Categories, C/N, Cs, As, NewCs, NewAs) :-
-    format("Specify the ~w by selecting a number (e.g. 1), or leave blank to unspecify:~n", [C]),
+    style_format("Specify the ~w by selecting a number (e.g. 1), or leave blank to unspecify:~n", [C], title),
     all_items(C/N, Items),
     display_format(C, Format),
     (
@@ -68,10 +68,10 @@ category_menu(Categories, C/N, Cs, As, NewCs, NewAs) :-
 
 
 prompt_provide_new_gift(Cs, As) :-
-    print_with_category_items("Provide the gift", Cs, As), write(":"), nl,
+    print_with_category_items("Provide the gift", Cs, As, ":", specify), nl,
     read_str(String),
     add_new_gift(String, Cs, As),
-    write(String), print_with_category_items(" will be a new gift", Cs, As), nl.
+    style_format(String, [], title), print_with_category_items(" will be a new gift", Cs, As, ".", information), nl.
 
 add_new_gift(Gift, Categories, Answers) :-
     assert_list_if_absent(Categories, Answers),

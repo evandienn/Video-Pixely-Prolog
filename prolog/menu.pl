@@ -14,11 +14,9 @@ menu(Options, Categories) :-
     destructure_preds(Options, DOptions),
     menu_internal(DOptions, Categories).
 menu_internal(Options, Categories) :-
-    write("Welcome to Gifterly! Please choose an option:"), nl,
+    style_format("Welcome to Gifterly! Please choose an option:~n", [], title),
     print_serialized_items(Options, "quit"),
     read_number("Please choose a valid option:", No),
-    !,
     get_option(Options, No, Option),
     call(Option, Categories),
-    !,
     menu_internal(Options, Categories).

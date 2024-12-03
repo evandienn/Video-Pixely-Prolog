@@ -10,8 +10,11 @@
         read_number_or_blank/2,
         read_number/2,
         get_yes_or_no/1,
-        print_with_category_items/3,
+        print_with_category_items/4,
+        print_with_category_items/5,
         unescape_format/2,
+        unescape_format/3,
+        style_format/3,
         print_serialized_items/1,
         print_serialized_items/2,
         print_serialized_items/3,
@@ -23,6 +26,7 @@
         heads_only/2
     ]).
 :- use_module(facts).
+:- use_module(styles).
 
 %! graceful_call(+Goal, -V)
 %
@@ -95,7 +99,7 @@ read_number_or_blank(_, NoOrBlank) :-
 %
 %  prompts Question everytime an invalid input was read
 read_number_or_blank(Question, NoOrBlank) :-
-    write(Question), nl,
+    style_format("~w~n", Question, error),
     read_number_or_blank(Question, NoOrBlank).
 
 %! read_number(+Question, -No)
@@ -130,32 +134,42 @@ unescape_list([Arg|Args], [UArg|UArgs]) :-
     unescape(Arg, UArg),
     unescape_list(Args, UArgs).
 unescape_format(Format, Args) :-
+    unescape_format(Format, Args, none).
+unescape_format(Format, Args, Style) :-
     unescape_list(Args, UArgs),
-    format(Format, UArgs).
+    style_format(Format, UArgs, Style).
 
-print_with_category_items(Prefix, [], []) :-
-    write(Prefix).
+style_format(Format, Args, Style) :-
+    ansi_style(Style, Attributes),
+    ansi_format(Attributes, Format, Args).
+
+
 %! print_with_category_items(+Prefix, +Categories, +Answers)
 %
 %  pretty prints the given category items
-print_with_category_items(Prefix, Categories, Answers) :-
-    write(Prefix), write(" when "),
-    print_with_category_items(Categories, Answers).
-print_with_category_items([C/_], [A]) :-
+print_with_category_items(Prefix, Categories, Answers, Suffix) :-
+    print_with_category_items(Prefix, Categories, Answers, Suffix, none).
+print_with_category_items(Prefix, [], [], Suffix, Style) :-
+    style_format("~w~w", [Prefix, Suffix], Style).
+print_with_category_items(Prefix, Categories, Answers, Suffix, Style) :-
+    style_format("~w when " , [Prefix], Style),
+    print_with_category_items_internal(Categories, Answers, Style),
+    style_format(Suffix, [], Style).
+print_with_category_items_internal([C/_], [A], Style) :-
     display_format(C, Format),
     format(string(Formatted), Format, A),
-    unescape_format("the ~w is ~w", [C, Formatted]).
-print_with_category_items([C1/_, C2/_], [A1, A2]) :-
+    unescape_format("the ~w is ~w", [C, Formatted], Style).
+print_with_category_items_internal([C1/_, C2/_], [A1, A2], Style) :-
     display_format(C1, Format1),
     format(string(Formatted1), Format1, A1),
     display_format(C2, Format2),
     format(string(Formatted2), Format2, A2),
-    unescape_format("the ~w is ~w and the ~w is ~w", [C1,Formatted1,C2,Formatted2]).
-print_with_category_items([C/_|Categories], [A|Answers]) :-
+    unescape_format("the ~w is ~w and the ~w is ~w", [C1,Formatted1,C2,Formatted2], Style).
+print_with_category_items_internal([C/_|Categories], [A|Answers], Style) :-
     display_format(C, Format),
     format(string(Formatted), Format, A),
-    unescape_format("the ~w is ~w, ", [C, Formatted]),
-    print_with_category_items(Categories, Answers).
+    unescape_format("the ~w is ~w, ", [C, Formatted], Style),
+    print_with_category_items_internal(Categories, Answers, Style).
 
 %! print_serialized_items(+Items)
 %
@@ -179,7 +193,7 @@ print_serialized_items(Items, Selected, Item0, Format0) :-
 print_serialized_items([], _, none, _, _).
 print_serialized_items([], _, Item0, _, _) :-
     Item0 \= none,
-    format("0: ~w~n", [Item0]).
+    style_format("0: ~w~n", [Item0], special_item).
 print_serialized_items([I|Items], Selected, Item0, Format, N) :-
     \+ is_list(I),
     print_serialized_items([[I]|Items], Selected, Item0, Format, N).
