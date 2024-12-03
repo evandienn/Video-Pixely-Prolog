@@ -12,16 +12,18 @@ new_gift(Categories, Cs, As) :-
 
 print_specs_and_gift([], []) :-
     write("There are no specifications."), nl.
+
 %! pretty-prints all specifications and gifts (if any)
 print_specs_and_gift(Categories, Answers) :-
-    G =.. [gift|Answers],
+    heads_only(Answers, HAs),
+    G =.. [gift|HAs],
     (
         graceful_call(G, Gift) -> Prefix = Gift
         ; Prefix = "There are no gifts"
     ),
     print_with_category_items(Prefix, Categories, Answers), write("."), nl.
 
-specify_category(Category, SC) :-
+specify_category(Category/_, SC) :-
     format(string(SC), "specify the ~w", Category).
 
 print_new_gift_menu(Categories) :-
@@ -46,18 +48,19 @@ get_item(_, Items, N, Item) :-
     M is N - 1,
     nth0(M, Items, Item).
 
-category_menu(Categories, C, Cs, As, NewCs, NewAs) :-
+category_menu(Categories, C/N, Cs, As, NewCs, NewAs) :-
     format("Specify the ~w by selecting a number (e.g. 1), or leave blank to unspecify:~n", [C]),
-    all_items(C, Items),
+    all_items(C/N, Items),
+    display_format(C, Format),
     (
-        map_get(C, Cs, As, Selected) -> print_serialized_items(Items, Selected, "other (please specify)")
-        ; print_serialized_items(Items, "other (please specify)")
+        map_get(C/N, Cs, As, Selected) -> print_serialized_items(Items, Selected, "other (please specify)", Format)
+        ; print_serialized_items(Items, none, "other (please specify)", Format)
     ),
     read_number_or_blank("Please choose a valid option:", NoOrBlank),
     (
-        NoOrBlank = blank -> map_unset(C, Cs, As, NewCs, NewAs)
+        NoOrBlank = blank -> map_unset(C/N, Cs, As, NewCs, NewAs)
         ; get_item(C, Items, NoOrBlank, Item),
-          ordered_map_put(Categories, C, Item, Cs, As, NewCs, NewAs)
+          ordered_map_put(Categories, C/N, Item, Cs, As, NewCs, NewAs)
     ).
 
 
@@ -78,14 +81,15 @@ prompt_add_new_gift(Gift, Categories, Answers) :-
 
 add_new_gift(Gift, Categories, Answers) :-
     assert_list_if_absent(Categories, Answers),
-    append(Answers, [Gift], Args),
+    heads_only(Answers, Hs),
+    append(Hs, [Gift], Args),
     Goal =.. [gift|Args],
     catch(\+ call(Goal), _, make_gift_dynamic(Categories)),
     assertz(Goal).
 
 assert_list_if_absent([], []).
-assert_list_if_absent([C|Categories], [A|Answers]) :-
-    Goal =.. [C,A],
+assert_list_if_absent([C/_|Categories], [A|Answers]) :-
+    Goal =.. [C|A],
     catch(\+ call(Goal), _, make_gift_dynamic(Categories)),
     assertz(Goal),
     assert_list_if_absent(Categories, Answers).
