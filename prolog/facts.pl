@@ -1,5 +1,5 @@
-:- module(facts, [occasion/1, relationship/1, gender/1, age_group/3, budget/3, gift/1, gift/2, gift/5, gift/6]).
-:- dynamic occasion/1, relationship/1, gender/1, gift/1, gift/2, gift/5, gift/6.
+:- module(facts, [occasion/1, relationship/1, gender/1, age_group/3, budget/3, gift/1, gift/2, gift/3, gift/4, gift/5, gift/6]).
+:- dynamic occasion/1, relationship/1, gender/1, gift/1, gift/2, gift/3, gift/4, gift/5, gift/6.
 
 % Define types of occasions
 occasion(birthday).
