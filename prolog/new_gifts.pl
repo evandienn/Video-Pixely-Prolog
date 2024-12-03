@@ -40,7 +40,7 @@ read_option(Categories, Cs, As) :-
         suggest_new_gift(Categories, NewCs, NewAs)
     ).
 
-get_item(Category/1, _, 0, Item) :-
+get_item(Category/1, _, 0, [Item]) :-
     format("Specify the ~w:~n", [Category]),
     read_str(Input),
     escape(Input, Item).
