@@ -11,7 +11,7 @@ new_gift(Categories, Cs, As) :-
     read_option(Categories, Cs, As).
 
 print_specs_and_gift([], []) :-
-    write("There are no criteria."), nl.
+    write("There are no specifications."), nl.
 %! pretty-prints all specifications and gifts (if any)
 print_specs_and_gift(Categories, Answers) :-
     G =.. [gift|Answers],
@@ -78,9 +78,10 @@ prompt_add_new_gift(Gift, Categories, Answers) :-
 
 add_new_gift(Gift, Categories, Answers) :-
     assert_list_if_absent(Categories, Answers),
-    G =.. [gift|Answers],
-    catch(\+ call(G, Gift), _, make_gift_dynamic(Categories)),
-    assertz(G).
+    append(Answers, [Gift], Args),
+    Goal =.. [gift|Args],
+    catch(\+ call(Goal), _, make_gift_dynamic(Categories)),
+    assertz(Goal).
 
 assert_list_if_absent([], []).
 assert_list_if_absent([C|Categories], [A|Answers]) :-
