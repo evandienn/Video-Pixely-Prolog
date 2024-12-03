@@ -4,25 +4,10 @@
 :- use_module(facts).
 :- use_module(general_gifts).
 :- use_module(alternative_gifts).
+:- use_module(new_gifts).
+:- use_module(menu).
 
-% dynamically unifies all items under `Category` to `Items`.
-all_items(Category, Items) :- all_items(Category, [], Items).
-all_items(Category, U, [I|Items]) :-
-    call(Category, I),
-    \+ member(I, U),
-    !,
-    all_items(Category, [I|U], Items).
-all_items(_, _, []).
-
-print_serialized_items(Items) :- print_serialized_items(Items, 1).
-print_serialized_items([], _) :- write("0: other (Please specify)"), nl.
-print_serialized_items([I|Items], N) :-
-    unescape(I, U),
-    format("~w: ~w", [N, U]), nl,
-    M is N + 1,
-    print_serialized_items(Items, M).
-
-% prints the prompt for `Category`
+%! prints the prompt for Category
 print_category_prompt(age_group, Items) :-
     findall((Start, End, Category), age_group(Start, End, Category), AgeGroups),
     format("Choose the age group by its number: (e.g. 1)~n", []),
@@ -37,7 +22,7 @@ print_category_prompt(budget, Items) :-
 print_category_prompt(Category, Items) :-
     format("Choose the ~w by its number: (e.g. 1)~n", [Category]),
     all_items(Category, Items),
-    print_serialized_items(Items).
+    print_serialized_items(Items, "other (please specify)").
 
 % Print age groups
 print_age_groups([], _, []) :- write("0: other (Please specify)"), nl.
@@ -52,6 +37,7 @@ print_budgets([(Start, End, Category) | Budgets], N, [Category | Items]) :-
     format("~w: ~w ($~w - $~w)~n", [N, Category, Start, End]),
     M is N + 1,
     print_budgets(Budgets, M, Items).
+
 % prompts user to choose a valid instance of `Category`
 % which will be unified to `Item`
 prompt_category(Category, Item) :-
@@ -111,12 +97,11 @@ recommend_gift(Categories, Answers) :-
     recommend_general_gifts(Categories, Answers).
 
 recommend :-
-    recommend([occasion, relationship, gender, age_group, budget]).
+    menu([recommend, new_gift], [occasion, relationship, gender, age_group, budget]).
 
 recommend(Categories) :-
     prompt_categories(Categories, Answers),
-    recommend_gift(Categories, Answers),
-    recommend(Categories).
+    recommend_gift(Categories, Answers).
 
 % Sample query
 % ?- recommend.
