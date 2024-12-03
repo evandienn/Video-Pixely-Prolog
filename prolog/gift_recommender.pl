@@ -9,12 +9,12 @@
 
 %! prints the prompt for Category
 print_category_prompt(age_group, Items) :-
-    findall((Start, End, Category), age_group(Start, End, Category), AgeGroups),
+    findall([Start, End, Category], age_group(Start, End, Category), AgeGroups),
     format("Choose the age group by its number: (e.g. 1)~n", []),
     print_age_groups(AgeGroups, 1, Items).
 
 print_category_prompt(budget, Items) :-
-    findall((Start, End, Category), budget(Start, End, Category), Budgets),
+    findall([Start, End, Category], budget(Start, End, Category), Budgets),
     format("Choose the budget by its number: (e.g. 1)~n", []),
     print_budgets(Budgets, 1, Items).
 
@@ -26,14 +26,14 @@ print_category_prompt(Category, Items) :-
 
 % Print age groups
 print_age_groups([], _, []).
-print_age_groups([(Start, End, Category) | AgeGroups], N, [Category | Items]) :-
-    format("~w: ~w (~w - ~w years)~n", [N, Category, Start, End]),
+print_age_groups([[Start, End, Category] | AgeGroups], N, [Category | Items]) :-
+    unescape_format("~w: ~w (~w - ~w years)~n", [N, Category, Start, End]),
     M is N + 1,
     print_age_groups(AgeGroups, M, Items).
 
 % Print budgets
 print_budgets([], _, []).
-print_budgets([(Start, End, Category) | Budgets], N, [Category | Items]) :-
+print_budgets([[Start, End, Category] | Budgets], N, [Category | Items]) :-
     format("~w: ~w ($~w - $~w)~n", [N, Category, Start, End]),
     M is N + 1,
     print_budgets(Budgets, M, Items).
@@ -45,8 +45,7 @@ prompt_category(Category, Item) :-
     format(string(Question), "Enter a valid number for the ~w:~n", [Category]),
     read_number(Question, ItemNo),
     get_item(Category, Items, ItemNo, Item),
-    unescape(Item, U),
-    format("Ok, the ~w is ~w.~n", [Category, U]).
+    unescape_format("Ok, the ~w is ~w.~n", [Category, Item]).
 
 prompt_assert_if_absent(Category, _, Item) :-
     C =.. [Category, Item],
