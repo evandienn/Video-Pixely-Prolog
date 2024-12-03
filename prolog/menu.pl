@@ -2,7 +2,7 @@
 :- use_module(utilities).
 
 get_option(_, 0, _) :-
-    write("Bye!"), nl, fail.
+    write("Bye!"), nl, !, halt(0).
 get_option(Options, N, Option) :-
     nth1(N, Options, Option).
 
