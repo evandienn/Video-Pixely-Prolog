@@ -225,10 +225,6 @@ ordered_map_put([K0|KOrder], K, V, [K1|Ks0], [V1|Vs0], [K1|Ks], [V1|Vs]) :-
     ordered_map_put(KOrder, K, V, Ks0, Vs0, Ks, Vs).
 ordered_map_put([_|KOrder], K, V, Ks0, Vs0, Ks, Vs) :-
     ordered_map_put(KOrder, K, V, Ks0, Vs0, Ks, Vs).
-% ordered_map_put([K0|KOrder], K, V, [K1|Ks0], [V1|Vs0], [K1|Ks], [V1|Vs]) :-
-%     K \= K0,
-%     K0 \= K1,
-%     ordered_map_put(KOrder, K, V, Ks0, Vs0, Ks, Vs).
 
 map_get(K, [K|_], [V|_], V).
 map_get(K, [K0|Ks], [_|Vs], V) :-

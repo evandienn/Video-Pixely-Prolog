@@ -1,10 +1,10 @@
-:- module(new_gifts, [new_gift/1, prompt_add_new_gift/3]).
+:- module(new_gifts, [suggest_new_gift/1]).
 :- use_module(utilities).
 :- use_module(facts).
 
-new_gift(Categories) :-
-    new_gift(Categories, [], []).
-new_gift(Categories, Cs, As) :-
+suggest_new_gift(Categories) :-
+    suggest_new_gift(Categories, [], []).
+suggest_new_gift(Categories, Cs, As) :-
     print_specs_and_gift(Cs, As),
     write("Choose an option by entering its number:"), nl,
     print_new_gift_menu(Categories),
@@ -33,11 +33,11 @@ print_new_gift_menu(Categories) :-
 read_option(Categories, Cs, As) :-
     read_number("Choose a valid option", No),
     (
-        No = 0 -> custom_gift(Cs, As)
+        No = 0 -> prompt_provide_new_gift(Cs, As)
         ; I is No - 1,
           nth0(I, Categories, C),
           category_menu(Categories, C, Cs, As, NewCs, NewAs),
-          new_gift(Categories, NewCs, NewAs)
+        suggest_new_gift(Categories, NewCs, NewAs)
     ).
 
 get_item(Category/1, _, 0, Item) :-
@@ -67,20 +67,11 @@ category_menu(Categories, C/N, Cs, As, NewCs, NewAs) :-
     ).
 
 
-custom_gift(Cs, As) :-
+prompt_provide_new_gift(Cs, As) :-
     print_with_category_items("Provide the gift", Cs, As), write(":"), nl,
     read_str(String),
     add_new_gift(String, Cs, As),
     write(String), print_with_category_items(" will be a new gift", Cs, As), nl.
-
-prompt_add_new_gift(Gift, Categories, Answers) :-
-    format(string(Prefix), "Add ~w as a gift", [Gift]),
-    print_with_category_items(Prefix, Categories, Answers), write("? (yes or no)"), nl,
-    get_yes_or_no(YesOrNo),
-    (
-        YesOrNo = yes -> add_new_gift(Gift, Categories, Answers)
-        ; nl
-    ).
 
 add_new_gift(Gift, Categories, Answers) :-
     assert_list_if_absent(Categories, Answers),

@@ -71,7 +71,7 @@ recommend_gift(Categories, Answers) :-
     recommend_general_gifts(Categories, Answers).
 
 recommend :-
-    menu([recommend, new_gift], [occasion/1, relationship/1, gender/1, age_group/3, budget/3]).
+    menu([recommend/1, suggest_new_gift/1], [occasion/1, relationship/1, gender/1, age_group/3, budget/3]).
 
 recommend(Categories) :-
     prompt_categories(Categories, Answers),
