@@ -12,7 +12,11 @@ print_category_prompt(Category/N, Items) :-
     format("Choose the ~w by its number: (e.g. 1)~n", [Category]),
     all_items(Category/N, Items),
     display_format(Category, Format),
-    print_serialized_items(Items, none, "other (please specify)", Format).
+    (
+        N = 1 -> Item0 = "other (please specify)"
+        ; Item0 = none
+    ),
+    print_serialized_items(Items, none, Item0, Format).
 
 % prompts user to choose a valid instance of `Category`
 % which will be unified to `Item`
@@ -20,7 +24,7 @@ prompt_category(Category/N, Item) :-
     print_category_prompt(Category/N, Items),
     format(string(Question), "Enter a valid number for the ~w:~n", [Category]),
     read_number(Question, ItemNo),
-    get_item(Category, Items, ItemNo, Item),
+    get_item(Category/N, Items, ItemNo, Item),
     display_format(Category, Format),
     format(string(Formatted), Format, Item),
     unescape_format("Ok, the ~w is ~w.~n", [Category, Formatted]).
@@ -39,12 +43,11 @@ prompt_assert_if_absent(Category, Input, Item) :-
         ; nl
     ).
 
-get_item(Category, _, 0, Item) :-
+get_item(Category/1, _, 0, Item) :-
     format("Specify the ~w:~n", [Category]),
     read_str(Input),
     escape(Input, Item),
     prompt_assert_if_absent(Category, Input, Item).
-
 get_item(_, Items, N, Item) :-
     nth1(N, Items, Item).
 
