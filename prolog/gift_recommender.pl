@@ -9,7 +9,7 @@
 
 % Fallback for other categories
 print_category_prompt(Category/N, Items) :-
-    format("Choose the ~w by its number: (e.g. 1)~n", [Category]),
+    unescape_format("Choose the ~w by its number: (e.g. 1)~n", [Category]),
     all_items(Category/N, Items),
     display_format(Category, Format),
     (
@@ -22,7 +22,8 @@ print_category_prompt(Category/N, Items) :-
 % which will be unified to `Item`
 prompt_category(Category/N, Item) :-
     print_category_prompt(Category/N, Items),
-    format(string(Question), "Enter a valid number for the ~w:~n", [Category]),
+    unescape(Category, UCategory),
+    format(string(Question), "Enter a valid number for the ~w:~n", [UCategory]),
     read_number(Question, ItemNo),
     get_item(Category/N, Items, ItemNo, Item),
     display_format(Category, Format),
@@ -33,7 +34,7 @@ prompt_assert_if_absent(Category, _, Item) :-
     C =.. [Category, Item],
     call(C).
 prompt_assert_if_absent(Category, Input, Item) :-
-    format("Do you want to add ~w into ~w? (enter yes or no)~n", [Input, Category]),
+    unescape_format("Do you want to add ~w into ~w? (enter yes or no)~n", [Input, Category]),
     get_yes_or_no(YN),
     (
         YN = yes ->
@@ -70,12 +71,14 @@ recommend_gift(Categories, Answers) :-
     print_with_category_items("There is no exact gift", Categories, Answers), write("."), nl, !,
     recommend_general_gifts(Categories, Answers).
 
-recommend :-
-    menu([recommend/1, suggest_new_gift/1], [occasion/1, relationship/1, gender/1, age_group/3, budget/3]).
-
+%! The entry point for the recommend gift option
 recommend(Categories) :-
     prompt_categories(Categories, Answers),
     recommend_gift(Categories, Answers).
+
+% The designated entry point of the program
+recommend :-
+    menu([recommend/1, suggest_new_gift/1], [occasion/1, relationship/1, gender/1, age_group/3, budget/3]).
 
 % Sample query
 % ?- recommend.
