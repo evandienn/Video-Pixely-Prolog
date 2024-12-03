@@ -11,6 +11,7 @@
         read_number/2,
         get_yes_or_no/1,
         print_with_category_items/3,
+        unescape_format/2,
         print_serialized_items/1,
         print_serialized_items/2,
         print_serialized_items/3,
@@ -85,7 +86,7 @@ read_number_or_blank(_, NoOrBlank) :-
         ; Input = "" -> NoOrBlank = blank
     ).
 %! read_number_or_blank(+Question, -NoOrBlank)
-% 
+%
 %  keeps reading from user input (whitespace-trimmed and line break delineated)
 %  until getting a number or blank
 %
@@ -95,12 +96,12 @@ read_number_or_blank(Question, NoOrBlank) :-
     read_number_or_blank(Question, NoOrBlank).
 
 %! read_number(+Question, -No)
-% 
+%
 %  keeps reading from user input (whitespace-trimmed and line break delineated)
 %  until getting a number
 %
 %  prompts Question everytime an invalid input was read
-read_number(Question, No) :- 
+read_number(Question, No) :-
     read_number_or_blank(Question, No),
     No \= blank.
 
@@ -118,41 +119,48 @@ get_yes_or_no(YesOrNo) :-
     ; LYN = "no" -> YesOrNo = no
     ; write("Please enter yes or no."), nl, get_yes_or_no(YesOrNo)
     ).
+unescape_list([], []).
+unescape_list([Arg|Args], [UArg|UArgs]) :-
+    unescape(Arg, UArg),
+    unescape_list(Args, UArgs).
+unescape_format(Format, Args) :-
+    unescape_list(Args, UArgs),
+    format(Format, UArgs).
 
-print_with_category_items(Prefix, [], []) :- 
+print_with_category_items(Prefix, [], []) :-
     write(Prefix).
 %! print_with_category_items(+Prefix, +Categories, +Answers)
-% 
+%
 %  pretty prints the given category items
 print_with_category_items(Prefix, Categories, Answers) :-
     write(Prefix), write(" when "),
     print_with_category_items(Categories, Answers).
 print_with_category_items([C], [V]) :-
-    format("the ~w is ~w", [C, V]).
+    unescape_format("the ~w is ~w", [C, V]).
 print_with_category_items([K1, C2], [V1, A2]) :-
-    format("the ~w is ~w and the ~w is ~w", [K1, V1, C2, A2]).
+    unescape_format("the ~w is ~w and the ~w is ~w", [K1, V1, C2, A2]).
 print_with_category_items([C|Categories], [V|Answers]) :-
-    format("the ~w is ~w, ", [C, V]),
+    unescape_format("the ~w is ~w, ", [C, V]),
     print_with_category_items(Categories, Answers).
 
 %! print_serialized_items(+Items)
-% 
-print_serialized_items(Items) :- 
+%
+print_serialized_items(Items) :-
     print_serialized_items(Items, none).
 %! print_serialized_items(+Items, +Item0)
-% 
-print_serialized_items(Items, Item0) :- 
+%
+print_serialized_items(Items, Item0) :-
     print_serialized_items(Items, none, Item0).
 %! print_serialized_items(+Items, +Selected, +Item0)
 % enumerates and prints Items with a 1-based counter in ascending order
 %
-% prints an extra ✔️ before eol if the line item = Selected  
+% prints an extra ✔️ before eol if the line item = Selected
 %
 % prints an extra line at the end if Item0 \= none
-print_serialized_items(Items, Selected, Item0) :- 
+print_serialized_items(Items, Selected, Item0) :-
     print_serialized_items(Items, Selected, 1, Item0).
 print_serialized_items([], _, _, none).
-print_serialized_items([], _, _, Item0) :- 
+print_serialized_items([], _, _, Item0) :-
     Item0 \= none,
     format("0: ~w~n", [Item0]).
 print_serialized_items([I|Items], Selected, N, Item0) :-
@@ -168,7 +176,8 @@ print_serialized_items([I|Items], Selected, N, Item0) :-
 % dynamically unifies all items under Category to Items
 all_items(Category, Items) :- all_items(Category, [], Items).
 all_items(Category, U, [I|Items]) :-
-    call(Category, I),
+    C =.. [Category, I],
+    call(C),
     \+ member(I, U),
     !,
     all_items(Category, [I|U], Items).
@@ -178,22 +187,22 @@ all_items(_, _, []).
 ordered_map_put(_, K, V, [], [], [K], [V]).
 ordered_map_put([K|_], K, V, [K|Ks], [_|Vs], [K|Ks], [V|Vs]).
 ordered_map_put([K|_], K, V, [K0|Ks], Vs, [K,K0|Ks], [V|Vs]) :- K \= K0.
-ordered_map_put([K0|KOrder], K, V, [K0|Ks0], [V0|Vs0], [K0|Ks], [V0|Vs]) :- 
+ordered_map_put([K0|KOrder], K, V, [K0|Ks0], [V0|Vs0], [K0|Ks], [V0|Vs]) :-
     K \= K0,
     ordered_map_put(KOrder, K, V, Ks0, Vs0, Ks, Vs).
-ordered_map_put([K0|KOrder], K, V, [K1|Ks0], [V1|Vs0], [K1|Ks], [V1|Vs]) :- 
+ordered_map_put([K0|KOrder], K, V, [K1|Ks0], [V1|Vs0], [K1|Ks], [V1|Vs]) :-
     K0 \= K1,
     ordered_map_put(KOrder, K, V, Ks0, Vs0, Ks, Vs).
 %! ordered_map_put(+KOrder, +K, +V, +Ks0, +Vs0, -Ks, -Vs)
 ordered_map_put(KOrder, K, V, Ks0, Vs0, Ks, Vs) :- fail.
 
 map_get(K, [K|Ks], [V|Vs], V).
-map_get(K, [K0|Ks], [_|Vs], V) :- 
+map_get(K, [K0|Ks], [_|Vs], V) :-
     K \= K0,
     map_get(K, Ks, Vs, V).
 
 map_unset(_, [], [], [], []).
 map_unset(K, [K|Ks], [_|Vs], Ks, Vs).
-map_unset(K, [K0|Ks0], [V|Vs0], [K0|Ks], [V|Vs]) :- 
+map_unset(K, [K0|Ks0], [V|Vs0], [K0|Ks], [V|Vs]) :-
     K \= K0,
     map_unset(K, Ks0, Vs0, Ks, Vs).
