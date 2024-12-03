@@ -9,7 +9,7 @@
 
 % Fallback for other categories
 print_category_prompt(Category/N, Items) :-
-    unescape_format("Choose the ~w by its number: (e.g. 1)~n", [Category]),
+    unescape_format("Choose the ~w by its number: (e.g. 1)~n", [Category], title),
     all_items(Category/N, Items),
     display_format(Category, Format),
     (
@@ -28,13 +28,13 @@ prompt_category(Category/N, Item) :-
     get_item(Category/N, Items, ItemNo, Item),
     display_format(Category, Format),
     format(string(Formatted), Format, Item),
-    unescape_format("Ok, the ~w is ~w.~n", [Category, Formatted]).
+    unescape_format("Ok, the ~w is ~w.~n", [Category, Formatted], information).
 
 prompt_assert_if_absent(Category, _, Item) :-
     C =.. [Category, Item],
     call(C).
 prompt_assert_if_absent(Category, Input, Item) :-
-    unescape_format("Do you want to add ~w into ~w? (enter yes or no)~n", [Input, Category]),
+    unescape_format("Do you want to add ~w into ~w? (enter yes or no)~n", [Input, Category], verify),
     get_yes_or_no(YN),
     (
         YN = yes ->
@@ -45,7 +45,7 @@ prompt_assert_if_absent(Category, Input, Item) :-
     ).
 
 get_item(Category/1, _, 0, [Item]) :-
-    format("Specify the ~w:~n", [Category]),
+    unescape_format("Specify the ~w:~n", [Category], specify),
     read_str(Input),
     escape(Input, Item),
     prompt_assert_if_absent(Category, Input, Item).
@@ -63,12 +63,12 @@ recommend_gift(Categories, Answers) :-
     heads_only(Answers, Hs),
     G =.. [gift|Hs],
     graceful_call(G, Gift),
-    print_with_category_items("The Gift", Categories, Answers),
-    format(" is ~w.~n", [Gift]).
+    format(string(Suffix), " is ~w.~n", [Gift]),
+    print_with_category_items("The Gift", Categories, Answers, Suffix, information).
 
 % Recommends a more general gift if no exact gift was found
 recommend_gift(Categories, Answers) :-
-    print_with_category_items("There is no exact gift", Categories, Answers), write("."), nl, !,
+    print_with_category_items("There is no exact gift", Categories, Answers, ".", information), nl, !,
     recommend_general_gifts(Categories, Answers).
 
 %! The entry point for the recommend gift option
