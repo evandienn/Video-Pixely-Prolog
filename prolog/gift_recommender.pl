@@ -25,14 +25,14 @@ print_category_prompt(Category, Items) :-
     print_serialized_items(Items, "other (please specify)").
 
 % Print age groups
-print_age_groups([], _, []) :- write("0: other (Please specify)"), nl.
+print_age_groups([], _, []).
 print_age_groups([(Start, End, Category) | AgeGroups], N, [Category | Items]) :-
     format("~w: ~w (~w - ~w years)~n", [N, Category, Start, End]),
     M is N + 1,
     print_age_groups(AgeGroups, M, Items).
 
 % Print budgets
-print_budgets([], _, []) :- write("0: other (Please specify)"), nl.
+print_budgets([], _, []).
 print_budgets([(Start, End, Category) | Budgets], N, [Category | Items]) :-
     format("~w: ~w ($~w - $~w)~n", [N, Category, Start, End]),
     M is N + 1,
