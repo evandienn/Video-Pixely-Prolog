@@ -217,14 +217,41 @@ n_arity(N, [_|Terms]) :-
     n_arity(M, Terms).
 
 ordered_map_put(_, K, V, [], [], [K], [V]).
-ordered_map_put([K|_], K, V, [K|Ks], [_|Vs], [K|Ks], [V|Vs]).
-ordered_map_put([K|_], K, V, [K0|Ks], Vs, [K,K0|Ks], [V|Vs]) :- K \= K0.
-ordered_map_put([K0|KOrder], K, V, [K1|Ks0], [V1|Vs0], [K1|Ks], [V1|Vs]) :-
-    K \= K0,
-    K \= K1,
-    ordered_map_put(KOrder, K, V, Ks0, Vs0, Ks, Vs).
-ordered_map_put([_|KOrder], K, V, Ks0, Vs0, Ks, Vs) :-
-    ordered_map_put(KOrder, K, V, Ks0, Vs0, Ks, Vs).
+ordered_map_put(KOdrs, K, V, Ks0, Vs0, Ks, Vs) :-
+    (
+        nth0(Index, Ks0, K) ->
+            Ks = Ks0,
+            nth0(Index, Vs0, _, R),
+            nth0(Index, Vs, V, R)
+        ; preceding_list(KOdrs, K, Ks0) ->
+            Ks = [K|Ks0],
+            Vs = [V|Vs0]
+        ; following_list(KOdrs, Ks0, K) ->
+            append(Ks0, [K], Ks),
+            append(Vs0, [V], Vs)
+        ; insert_into_list(KOdrs, Ks0, Vs0, K, V, Ks, Vs)
+    ).
+preceding_list(KOdrs, K, [K0|_]) :-
+    nth0(Idx0, KOdrs, K0),
+    nth0(IdxK, KOdrs, K),
+    IdxK < Idx0.
+
+insert_into_list([K|_], [OK|OKs], OVs, K, V, [K,OK|OKs], [V|OVs]) :-
+    OK \= K.
+insert_into_list([OK|KOdrs], [OK|OKs], [OV|OVs], K, V, [OK|Ks], [OV|Vs]) :-
+    OK \= K,
+    insert_into_list(KOdrs, OKs, OVs, K, V, Ks, Vs).
+insert_into_list([KOdr|KOdrs], [OK|OKs], OVs, K, V, Ks, Vs) :-
+    KOdr \= K,
+    OK \= K,
+    insert_into_list(KOdrs, [OK|OKs], OVs, K, V, Ks, Vs).
+
+following_list(KOdrs, [K0], K) :-
+    nth0(Idx0, KOdrs, K0),
+    nth0(IdxK, KOdrs, K),
+    IdxK > Idx0.
+following_list(KOrds, [_|Ks0], K) :-
+    following_list(KOrds, Ks0, K).
 
 map_get(K, [K|_], [V|_], V).
 map_get(K, [K0|Ks], [_|Vs], V) :-
