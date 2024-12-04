@@ -25,7 +25,7 @@ Sreenshots here
    https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/b83b5537daff5db05c438cf0cfef9a599cf55b50/prolog/general_gifts.pl#L12-L16
    https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/b83b5537daff5db05c438cf0cfef9a599cf55b50/prolog/utilities.pl#L31-L34
    
-3. **Prolog’s Built-In Control Structures**
+2. **Prolog’s Built-In Control Structures**
 
    We leverage on logical and non-logical control structures to achieve different goals:
 
@@ -49,7 +49,7 @@ Sreenshots here
        https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/b83b5537daff5db05c438cf0cfef9a599cf55b50/prolog/menu.pl#L4-L7
        We employ this structure to implement the quit option in the main menu.
      
-4. **Dynamic Knowledge Base Expansion**
+3. **Dynamic Knowledge Base Expansion**
 
    To enable user-defined category items and gifts, the knowledge base of our program has to be dynamically extensible:
 
@@ -85,3 +85,36 @@ Sreenshots here
   
      An alternative can be discarding the use of modules by lumping all source files into one mega file such that there would be only one knowledge base in the program. We opted out of this route because we do not want to compromise on clean code.
    
+4. **Higher-Order Predicates**
+
+   We have employed various kinds of higher-order predicates built in Prolog to achieve different goals or even compose our own higher-order predicates.
+
+   - Direct Uses of Higher-Order Predicates
+     - `maplist/3`
+
+       When rendering the "suggest new gift" menu, we generate the menu options by prepending `"specify the "` into each of the categories. Here we use `maplist/3`, whose first term (i.e. `specify_category`) is a mapping predicate of arity 2, second term (i.e. `Category`) the original list, and the third term (i.e. `SCs`) the result list.
+       https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/b83b5537daff5db05c438cf0cfef9a599cf55b50/prolog/new_gifts.pl#L29-L31
+       In `specify_category/2`, the first term is an element in the original list, we unify the mapped result to `SC` which will end up in the new list.
+       https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/b83b5537daff5db05c438cf0cfef9a599cf55b50/prolog/new_gifts.pl#L26-L27
+       
+     - `predsort/3`
+       
+       Here, we sort `Unsorted` to `[_|SubLists]` by using `predsort/3`, whose first term (i.e. `compare_by_length_then_intrinsic`) is a comparison predicate of arity 3,
+       https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/b83b5537daff5db05c438cf0cfef9a599cf55b50/prolog/utilities.pl#L57
+       The comparison predicate is then passed 3 arguments and required to unify the comparison result to `Delta`. Here we sort primarily by the sublist length in descending order. `Delta` should be unified to one of the three atoms, `'='`, `'<'` and `'>'`.
+       https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/b83b5537daff5db05c438cf0cfef9a599cf55b50/prolog/utilities.pl#L43-L48
+
+   - Composition of Higher-Order Predicates
+     - `menu/2`
+  
+       - At the entry point of the program (`recommend/0`), we render the main menu by passing a list of menu option predicates and a list of category predicates to `menu/2`.
+       (We pass predicates in the form `pred/N` instead of `pred` to facilitate readibility and code discovery. For category predicates, their arity also serves other purposes which will be explained later)
+         https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/b83b5537daff5db05c438cf0cfef9a599cf55b50/prolog/gift_recommender.pl#L79-L81
+         
+       - We strip the arities in the option predicates by calling `destructure_preds/2` before proceeding to `menu_internal/2`. (e.g. `[recommend/1, suggest_new_gift/1]` to `[recommend, suggest_new_gift]`)
+         https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/b83b5537daff5db05c438cf0cfef9a599cf55b50/prolog/menu.pl#L9-L15
+         
+       - After matching a menu option with the user input, we call `call(Option, Categories)` to launch a menu option. `call/2` is a built-in higher-order predicate that invokes the given term (i.e. `Option`) with an extra argument (i.e. `Categories`).
+
+         Suppose the user has chosen the option "recommend", the `call/2` predicate will effectively become `call(recommend, Categories)`, which is equivalent to calling `recommend(Categories)`.
+         https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/b83b5537daff5db05c438cf0cfef9a599cf55b50/prolog/menu.pl#L16-L22
