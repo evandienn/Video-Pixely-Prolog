@@ -214,3 +214,11 @@ Here is a link to our [proposal](Project_Proposal.md)
          Template = [_A, _B, _C],
          Goal = age_group(_A, _B, _C) .         
          ```
+
+
+
+
+<img width="1225" alt="Screenshot 2024-12-03 at 22 38 58" src="https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/assets/5562/6a8a96d6-d322-4e7b-9593-349a2eb5d334">
+
+
+
