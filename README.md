@@ -54,13 +54,27 @@ Here is a link to our [proposal](Project_Proposal.md)
          https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/539cb1dd56871623f80cecd101d39bb761fe37f7/prolog/gift_recommender.pl#L47-L53
        
 
-3. Knowledge Base Construction
+2. Knowledge Base Construction
 
    We statically define facts and relationships between categories and gifts in `facts.pl` entailing our knowledge base, a foundation our MVP functions upon.
    https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/539cb1dd56871623f80cecd101d39bb761fe37f7/prolog/facts.pl#L4-L79
-4. Error Handling and User Feedback
    
-5. Foundation for Expansion
+3. Error Handling and User Feedback
+
+   Since most user interactions in our MVP involve a selection menu, users are expected to give a valid number (i.e. a number corresponding to a menu item) as their input. How can we tell a valid number from an invalid input? How can we recover from that?
+      
+   `read_number_or_blank/2` and its derivative `read_number/2` come to our rescue. (They are derivatives of `read_str/1` in turn)
+   
+   - The first case of `read_number_or_blank/2` will match the user input with a number a blank string,
+     https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/539cb1dd56871623f80cecd101d39bb761fe37f7/prolog/utilities.pl#L89-L94
+   - If the predicate higher up in the stack requests a reentry (e.g. `NoOrBlank` is beyond the range of `Items` so `get_items/4` fails),
+     https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/539cb1dd56871623f80cecd101d39bb761fe37f7/prolog/new_gifts.pl#L62-L67
+     or the first case has failed, the second case will print `Question` and prompt users for another input, **(the printing `Style` is `error` here)**
+     https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/539cb1dd56871623f80cecd101d39bb761fe37f7/prolog/utilities.pl#L101-L103
+     Since the second case is tail-recursive, `read_number_or_blank/2` will never end until users provide a valid input.
+   
+4. Foundation for Expansion
+   
 
 ## A guide to new learning
 1. **Complex Querying with Recursive Rules**
