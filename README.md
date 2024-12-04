@@ -9,6 +9,8 @@
 
 Here is a link to our [proposal](Project_Proposal.md)
 
+This is the link to our [DEMO](https://youtu.be/urUTzmyJlpc)
+
 
 ## A Guide to MVP
 1. User Input and Output
@@ -31,8 +33,8 @@ Here is a link to our [proposal](Project_Proposal.md)
        For example,
        ```prolog
        ?- print_with_category_items("The gift", [occasion/1,gender/1,age_group/3], [christmas,male,[infant,0,5]], " is a pacifier").
-       The gift when the occasion is christmas, the gender is male and the age group is infant (0 - 5 years) is a pacifier
-       true .
+       The gift when the occasion is Christmas, the gender is male and the age group is infant (0 - 5 years) is a pacifier
+       true.
        ```
      
      - Text Styling
@@ -40,14 +42,14 @@ Here is a link to our [proposal](Project_Proposal.md)
        Bored with monochromic output? So are we! That's why we have implemented `style_format/3` and `ansi_style/2` to colorize our world in a consistent way. (powered by `ansi_format/3`)
        https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/539cb1dd56871623f80cecd101d39bb761fe37f7/prolog/utilities.pl#L142-L144
        https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/539cb1dd56871623f80cecd101d39bb761fe37f7/prolog/styles.pl#L3-L9
-       Simply passing one of predefined styles (e.g. `information`) as `Style` in `style_format/3`, `unescape/format/3` or `print_with_category_items/5`, the world will be more colorful and stylish.
+       Simply passing one of the predefined styles (e.g. `information`) as `Style` in `style_format/3`, `unescape/format/3` or `print_with_category_items/5`, the world will be more colorful and stylish.
      
    - Code Flow Example for User Input Prompt
 
      - We now provide a selection menu with enumerated options instead of requiring users to input their choices in full text, unless they want to provide an option not provided by our MVP.
        https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/539cb1dd56871623f80cecd101d39bb761fe37f7/prolog/gift_recommender.pl#L10-L18
   
-     - After printing the selection menu, we use `read_number/2` to read a number from users that specifies what option they want to choose and map the number with the corresponding item in the category using `get_item/3`.
+     - After printing the selection menu, we use `read_number/2` to read a number from users that specify what option they want to choose and map the number with the corresponding item in the category using `get_item/3`.
        https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/539cb1dd56871623f80cecd101d39bb761fe37f7/prolog/gift_recommender.pl#L23-L28
   
      - If `N = 0` in `get_item/3`, it indicates users want to provide their own option, we read their input as free text with `read_str/1`.
@@ -55,7 +57,7 @@ Here is a link to our [proposal](Project_Proposal.md)
 
     - Code Flow Example for Gift Recommendation
   
-      We use `recommend_gift/2` to recommend a gift after getting the answers (i.e. `Answers`) for all categories (i.e. `Categories`) from users. Differing from the PoC, the MVP no longer checks against `gift/3` for recommendations, instead it constructs the gift predicate on the fly.
+      We use `recommend_gift/2` to recommend a gift after getting the answers (i.e. `Answers`) for all categories (i.e. `Categories`) from users. Differing from the PoC, the MVP no longer checks against `gift/3` for recommendations, instead, it constructs the gift predicate on the fly.
       
       - The first case of `recommend_gift/2` attempts to match an existing `gift/N` predicate by dynamically invoking `G` which is constructed from `Answers`. The result will be unified to `Gift` as the recommendation and subsequently printed together with `Categories` and `Answers` in a neat way.
         https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/539cb1dd56871623f80cecd101d39bb761fe37f7/prolog/gift_recommender.pl#L61-L67
@@ -85,11 +87,11 @@ Here is a link to our [proposal](Project_Proposal.md)
 
    - Incorporating complex relationships
 
-     Evolving from our PoC, the MVP has incorporated new predicates `age_group/3`, `budget/3` and `gift/N` (where 1 <= N <= 7). Rather than hardcoding the logic for the new relationships with varying arities, we have introduced significant dynamism into our program. As such, our codebase has become highly extensible for incorporating more complex relationships including arbitrarily nested predicates. We believe that only minor modifications to our codebase, primarily related to output formatting, are needed to provide full support for these complex relationships. (**A guide to new learning** has provided various examples for new fact assertion and gift recommendation in a dynamic way)
+     Evolving from our PoC, the MVP has incorporated new predicates `age_group/3`, `budget/3`, and `gift/N` (where 1 <= N <= 7). Rather than hardcoding the logic for the new relationships with varying arities, we have introduced significant dynamism into our program. As such, our codebase has become highly extensible for incorporating more complex relationships including arbitrarily nested predicates. We believe that only minor modifications to our codebase, primarily related to output formatting, are needed to provide full support for these complex relationships. (**A guide to new learning** has provided various examples for new fact assertion and gift recommendation in a dynamic way)
       
    - Adjusting recommendations based on user preferences
 
-     Based on foundations laid, we have implemented a new feature "suggest new gift" beyond the scope of my proposal. Users can now suggest new gifts for any category combination they specify through the new user interface. Given the successful implementation of this use case, we can see no foreseeable roadblocks in implementing new features for adjusting recommendations based on user preferences.
+     Based on the foundations laid, we have implemented a new feature "suggest new gift" beyond the scope of my proposal. Users can now suggest new gifts for any category combination they specify through the new user interface. Given the successful implementation of this use case, we can see no foreseeable roadblocks in implementing new features for adjusting recommendations based on user preferences.
      
    - Adding natural language processing (NLP) to allow for a more conversational experience
    
@@ -99,7 +101,7 @@ Here is a link to our [proposal](Project_Proposal.md)
    
    When there is no exact match for a given category list, we recursively generate the more general sublists in descending order by length to enable fuzzy matching.
    https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/539cb1dd56871623f80cecd101d39bb761fe37f7/prolog/utilities.pl#L50-L65
-   For example, given facts as below,
+   For example, given the facts below,
    ```prolog
    gift(senior, luxury, "spa resort").
    gift(senior, "warm greetings").
@@ -120,7 +122,7 @@ Here is a link to our [proposal](Project_Proposal.md)
    
 2. **Prolog’s Built-In Control Structures**
 
-   We leverage on logical and non-logical control structures to achieve different goals:
+   We leverage logical and non-logical control structures to achieve different goals:
 
    - **Logical Control Structures**
      
@@ -138,7 +140,7 @@ Here is a link to our [proposal](Project_Proposal.md)
        
    - **Non-logical Control Structures**
      
-       `halt/1` is non-logical control structure that will unconditionally terminate the program together with the `swipl` process.
+       `halt/1` is a non-logical control structure that will unconditionally terminate the program together with the `swipl` process.
        https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/539cb1dd56871623f80cecd101d39bb761fe37f7/prolog/menu.pl#L4-L7
        We employ this structure to implement the quit option in the main menu.
      
@@ -159,7 +161,7 @@ Here is a link to our [proposal](Project_Proposal.md)
 
    - **An Intriguing Caveat**
    
-     We have discovered is that Prolog treats imported predicates differently from locally declared predicates when it comes to `dynamic/1`. We originally planned to use `dynamic/1` exclusively until we were hit with mysterious bugs where new assertions would completely override the imported predicates.
+     We have discovered that Prolog treats imported predicates differently from locally declared predicates when it comes to `dynamic/1`. We originally planned to use `dynamic/1` exclusively until we were hit with mysterious bugs where new assertions would completely override the imported predicates.
      For example, if we called `assertz(occasion(easter))` into the knowledge base,
      https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/539cb1dd56871623f80cecd101d39bb761fe37f7/prolog/facts.pl#L5-L8
      The effective knowledge base would become
@@ -194,14 +196,14 @@ Here is a link to our [proposal](Project_Proposal.md)
        
        Here, we sort `Unsorted` to `[_|SubLists]` by using `predsort/3`, whose first term (i.e. `compare_by_length_then_intrinsic`) is a comparison predicate of arity 3,
        https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/539cb1dd56871623f80cecd101d39bb761fe37f7/prolog/utilities.pl#L57
-       The comparison predicate is then passed 3 arguments and required to unify the comparison result to `Delta`. Here we sort primarily by the sublist length in descending order. `Delta` should be unified to one of the three atoms, `'='`, `'<'` and `'>'`.
+       The comparison predicate is then passed through 3 arguments and required to unify the comparison result to `Delta`. Here we sort primarily by the sublist length in descending order. `Delta` should be unified to one of the three atoms, `'='`, `'<'` and `'>'`.
        https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/539cb1dd56871623f80cecd101d39bb761fe37f7/prolog/utilities.pl#L43-L48
 
    - Compositions
      - `menu/2`
   
        - At the entry point of the program (`recommend/0`), we render the main menu by passing a list of menu option predicates and a list of category predicates to `menu/2`.
-       (We pass predicates in the form `pred/N` instead of `pred` to facilitate readibility and code discovery. For category predicates, their arity also serves other purposes which will be explained later)
+       (We pass predicates in the form `pred/N` instead of `pred` to facilitate readability and code discovery. For category predicates, their arity also serves other purposes which will be explained later)
          https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/539cb1dd56871623f80cecd101d39bb761fe37f7/prolog/gift_recommender.pl#L79-L81
          
        - We strip the arities in the option predicates by calling `destructure_preds/2` before proceeding to `menu_internal/2`. (e.g. `[recommend/1, suggest_new_gift/1]` to `[recommend, suggest_new_gift]`)
@@ -224,7 +226,7 @@ Here is a link to our [proposal](Project_Proposal.md)
 
        - Why `all_items/2` instead of `findall/3`?
          https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/539cb1dd56871623f80cecd101d39bb761fe37f7/prolog/utilities.pl#L211-L213
-         You can see we use `findall/3` inside `all_items/2`, however we have to work with category predicates with varying arities whereas the direct use of `findall/3` expects one-size-fit-all `Template` and `Goal`. Therefore, we construct `Template` and `Goal` dynamically with `goal_n_arity/3`.
+         You can see we use `findall/3` inside `all_items/2`, however, we have to work with category predicates with varying arities whereas the direct use of `findall/3` expects one-size-fits-all `Template` and `Goal`. Therefore, we construct `Template` and `Goal` dynamically with `goal_n_arity/3`.
          https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/539cb1dd56871623f80cecd101d39bb761fe37f7/prolog/utilities.pl#L219-L226
          For example, we get
          ```prolog
