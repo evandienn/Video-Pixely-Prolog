@@ -87,9 +87,9 @@ Sreenshots here
    
 4. **Higher-Order Predicates**
 
-   We have employed various kinds of higher-order predicates built in Prolog to achieve different goals or even compose our own higher-order predicates.
+   We have used various kinds of built-in higher-order predicates in Prolog or even compose our own higher-order predicates to achieve different goals
 
-   - Direct Uses of Higher-Order Predicates
+   - Direct Uses
      - `maplist/3`
 
        When rendering the "suggest new gift" menu, we generate the menu options by prepending `"specify the "` into each of the categories. Here we use `maplist/3`, whose first term (i.e. `specify_category`) is a mapping predicate of arity 2, second term (i.e. `Category`) the original list, and the third term (i.e. `SCs`) the result list.
@@ -104,7 +104,7 @@ Sreenshots here
        The comparison predicate is then passed 3 arguments and required to unify the comparison result to `Delta`. Here we sort primarily by the sublist length in descending order. `Delta` should be unified to one of the three atoms, `'='`, `'<'` and `'>'`.
        https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/539cb1dd56871623f80cecd101d39bb761fe37f7/prolog/utilities.pl#L43-L48
 
-   - Composition of Higher-Order Predicates
+   - Compositions
      - `menu/2`
   
        - At the entry point of the program (`recommend/0`), we render the main menu by passing a list of menu option predicates and a list of category predicates to `menu/2`.
@@ -118,3 +118,24 @@ Sreenshots here
 
          Suppose the user has chosen the option "recommend", the `call/2` predicate will effectively become `call(recommend, Categories)`, which is equivalent to calling `recommend(Categories)`.
          https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/539cb1dd56871623f80cecd101d39bb761fe37f7/prolog/menu.pl#L16-L22
+
+     - `all_items/2`
+
+       Rendering enumerated lists of category items as selection items is a staple in our program, as in the function "recommend"
+       https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/539cb1dd56871623f80cecd101d39bb761fe37f7/prolog/gift_recommender.pl#L11-L19
+       and "suggest new gift"
+       https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/539cb1dd56871623f80cecd101d39bb761fe37f7/prolog/new_gifts.pl#L50-L61
+
+       `all_items/2` is the unsung hero that unifies all items under a `Category/N` with `Items`.
+       https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/539cb1dd56871623f80cecd101d39bb761fe37f7/prolog/utilities.pl#L209-L211
+
+       - Why `all_items/2` instead of `findall/3`?
+         https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/539cb1dd56871623f80cecd101d39bb761fe37f7/prolog/utilities.pl#L211-L213
+         You can see we use `findall/3` inside `all_items/2`, however we have to work with category predicates with varying arities whereas the direct use of `findall/3` expects one-size-fit-all `Template` and `Goal`. Therefore, we construct `Template` and `Goal` dynamically with `goal_n_arity/3`.
+         https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/539cb1dd56871623f80cecd101d39bb761fe37f7/prolog/utilities.pl#L219-L226
+         For example, we get
+         ```prolog
+         ?- goal_n_arity(age_group/3, Template, Goal).
+         Template = [_A, _B, _C],
+         Goal = age_group(_A, _B, _C) .         
+         ```
