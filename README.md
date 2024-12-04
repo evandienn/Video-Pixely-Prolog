@@ -74,6 +74,16 @@ Here is a link to our [proposal](Project_Proposal.md)
      Since the second case is tail-recursive, `read_number_or_blank/2` will never end until users provide a valid input.
    
 4. Foundation for Expansion
+
+   - Incorporating complex relationships
+
+     Evolving from our PoC, the MVP has incorporated new predicates `age_group/3`, `budget/3` and `gift/N` (where 1 <= N <= 7). Rather than hardcoding the logic for the new relationships with varying arities, we have introduced significant dynamism into our program. As such, our codebase has become highly extensible for incorporating more complex relationships including arbitrarily nested predicates. We believe that only minor modifications to our codebase, primarily related to output formatting, are needed to provide full support for these complex relationships. (**A guide to new learning** has provided various examples for new fact assertion and gift recommendation in a dynamic way)
+      
+   - Adjusting recommendations based on user preferences
+
+     Based on foundations laid, we have implemented a new feature "suggest new gift" beyond the scope of my proposal. Users can now suggest new gifts for any category combination they specify through the new user interface. Given the successful implementation of this use case, we can see no foreseeable roadblocks in implementing new features for adjusting recommendations based on user preferences.
+     
+   - Adding natural language processing (NLP) to allow for a more conversational experience
    
 
 ## A guide to new learning
