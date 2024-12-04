@@ -1,6 +1,4 @@
 
-## A Guide to MVP
-
 <img width="1225" alt="Screenshot 2024-12-03 at 21 40 47" src="https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/assets/5562/a2fad5f5-532d-4a68-811f-3c3b26843d95">
 
 <img width="1225" alt="Screenshot 2024-12-03 at 21 41 00" src="https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/assets/5562/25799e71-1089-4a07-87d2-fffae7c54ee0">
@@ -11,6 +9,8 @@
 
 Here is a link to our [proposal](Project_Proposal.md)
 
+
+## A Guide to MVP
 1. User Input and Output
 
    - Improvements to Input
