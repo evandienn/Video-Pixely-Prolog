@@ -208,14 +208,9 @@ print_serialized_items([I|Items], Selected, Item0, Format, N) :-
 
 %! all_items(+Category, -Items)
 % dynamically unifies all items under Category to Items
-all_items(Category/N, Items) :- all_items(Category/N, [], Items).
-all_items(Category/N, U, [I|Items]) :-
-    goal_n_arity(Category/N, I, Goal),
-    call(Goal),
-    \+ member(I, U),
-    !,
-    all_items(Category/N, [I|U], Items).
-all_items(_, _, []).
+all_items(Category/N, Items) :-
+    goal_n_arity(Category/N, Template, Goal),
+    findall(Template, Goal, Items).
 
 heads_only([], []).
 heads_only([[H|_]|List], [H|Heads]) :-
