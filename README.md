@@ -7,7 +7,7 @@
 
 <img width="1225" alt="Screenshot 2024-12-03 at 21 41 36" src="https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/assets/5562/73dcd73f-bb81-4a77-876b-103622117bd7">
 
-Here is a link to our proposal [a relative link](Project_Proposal.md)
+Here is a link to our [proposal](Project_Proposal.md)
 
 
 
