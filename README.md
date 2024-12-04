@@ -11,17 +11,27 @@ Here is a link to our [proposal](Project_Proposal.md)
 
 This is the link to our [DEMO](https://youtu.be/urUTzmyJlpc)
 
-## How to test and run the code: Prolog
+### How to test and run the code: Prolog
+
 Clone the repository and navigate to the Prolog subdirectory:
 
+```bash
 cd prolog
+```
+
 Load the gift recommender using swipl:
 
+```bash
 swipl gift_recommender.pl
-Enter recommend. in the terminal to trigger the user input prompt:
+```
 
+Enter `recommend.` in the terminal to trigger the user input prompt:
+
+```prolog
 recommend.
+```
 After inputting any matching occasion and relationship and the other categories, you will receive a gift recommendation.
+
 If no match is found, the system will recommend a more general gift based on your selection.
 
 You can also choose to add your own suggestion of what gifts to recommend to dynamically update our knowledge base by choosing option 2 and specifying the relevant categories
