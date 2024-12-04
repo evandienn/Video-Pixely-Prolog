@@ -54,7 +54,7 @@ compare_by_length_then_intrinsic(Delta, Sub1, Sub2) :-
 %  SubLists is sorted by the length of the sublists in descending order
 all_strict_sublists(List, SubLists) :-
     all_strict_sublists([], List, Unsorted),
-    predsort(compare_by_length_then_intrinsic, Unsorted, SubLists).
+    predsort(compare_by_length_then_intrinsic, Unsorted, [_|SubLists]).
 
 all_strict_sublists(Prefix, [H|List], SubLists) :-
     append(Prefix, [H], Prefix2),

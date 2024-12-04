@@ -4,7 +4,7 @@
 % The category items of each general gift is a strict sublist of the given category items
 recommend_general_gifts(Categories, Answers) :-
     zip(Categories, Answers, Tuples),
-    all_strict_sublists(Tuples, [_|AllTuples]),
+    all_strict_sublists(Tuples, AllTuples),
     recommend_general_gifts_with_prompt(AllTuples).
 
 recommend_general_gifts_with_prompt([]) :-  % Base case: no more recommendations
