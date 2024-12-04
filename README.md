@@ -1,4 +1,14 @@
-Sreenshots here
+
+<img width="1225" alt="Screenshot 2024-12-03 at 21 40 47" src="https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/assets/5562/a2fad5f5-532d-4a68-811f-3c3b26843d95">
+
+<img width="1225" alt="Screenshot 2024-12-03 at 21 41 00" src="https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/assets/5562/25799e71-1089-4a07-87d2-fffae7c54ee0">
+
+<img width="1225" alt="Screenshot 2024-12-03 at 21 41 24" src="https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/assets/5562/0fb46758-aff1-4a9f-84f6-d5a2769a7379">
+
+<img width="1225" alt="Screenshot 2024-12-03 at 21 41 36" src="https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/assets/5562/73dcd73f-bb81-4a77-876b-103622117bd7">
+
+Here is a link to our proposal [a relative link](Project_Proposal.md)
+
 
 
 ## A guide to new learning
