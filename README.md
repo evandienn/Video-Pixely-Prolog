@@ -1,4 +1,6 @@
 
+## A Guide to MVP
+
 <img width="1225" alt="Screenshot 2024-12-03 at 21 40 47" src="https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/assets/5562/a2fad5f5-532d-4a68-811f-3c3b26843d95">
 
 <img width="1225" alt="Screenshot 2024-12-03 at 21 41 00" src="https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/assets/5562/25799e71-1089-4a07-87d2-fffae7c54ee0">
@@ -9,7 +11,52 @@
 
 Here is a link to our [proposal](Project_Proposal.md)
 
+1. User Input and Output
 
+   - Improvements to Input
+     
+     We have implemented wrapper read functions around `read_string/5` (`read_str/1` and its derivatives) to ensure all user inputs will always be white-spaces-trimmed and single-lined, replacing the use of `read/1` which expects a Prolog term as its input. That has prevented classes of invalid inputs while improving user experience by eliminating the need of a trailing period in user input.
+     https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/539cb1dd56871623f80cecd101d39bb761fe37f7/prolog/utilities.pl#L86-L87
+
+   - Improvements to Output
+
+     - Pretty Print
+  
+       Thanks to `print_with_category_items/4` and `print_with_category_items/5`, we can now generate and print a neat sentence from a list of Category-Answer tuples. 
+       https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/539cb1dd56871623f80cecd101d39bb761fe37f7/prolog/utilities.pl#L147-L172
+       For example,
+       ```prolog
+       ?- print_with_category_items("The gift", [occasion/1,gender/1,age_group/3], [christmas,male,[infant,0,5]], " is a pacifier").
+       The gift when the occasion is christmas, the gender is male and the age group is infant (0 - 5 years) is a pacifier
+       true .
+       ```
+     
+     - Text Styling
+       
+       Bored with monochromic output? So are we! That's why we have implemented `style_format/3` and `ansi_style/2` to colorize our world in a consistent way. (powered by `ansi_format/3`)
+       https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/539cb1dd56871623f80cecd101d39bb761fe37f7/prolog/utilities.pl#L142-L144
+       https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/539cb1dd56871623f80cecd101d39bb761fe37f7/prolog/styles.pl#L3-L9
+       Simply passing one of predefined styles (e.g. `information`) as `Style` in `style_format/3`, `unescape/format/3` or `print_with_category_items/5`, the world will be more colorful and stylish.
+     
+   - Code Flow Example for User Input Prompt
+
+     - We now provide a selection menu with enumerated options instead of requiring users to input their choices in full text, unless they want to provide an option not provided by our MVP.
+       https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/539cb1dd56871623f80cecd101d39bb761fe37f7/prolog/gift_recommender.pl#L10-L18
+  
+     - After printing the selection menu, we use `read_number/2` to read a number from users that specifies what option they want to choose and map the number with the corresponding item in the category using `get_item/3`.
+       https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/539cb1dd56871623f80cecd101d39bb761fe37f7/prolog/gift_recommender.pl#L23-L28
+  
+     - If `N = 0` in `get_item/3`, it indicates users want to provide their own option, we read their input as free text with `read_str/1`.
+         https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/539cb1dd56871623f80cecd101d39bb761fe37f7/prolog/gift_recommender.pl#L47-L53
+       
+
+3. Knowledge Base Construction
+
+   We statically define facts and relationships between categories and gifts in `facts.pl` entailing our knowledge base, a foundation our MVP functions upon.
+   https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/539cb1dd56871623f80cecd101d39bb761fe37f7/prolog/facts.pl#L4-L79
+4. Error Handling and User Feedback
+   
+5. Foundation for Expansion
 
 ## A guide to new learning
 1. **Complex Querying with Recursive Rules**
