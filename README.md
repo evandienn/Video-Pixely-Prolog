@@ -19,6 +19,10 @@ Here is a link to our [proposal](Project_Proposal.md)
      https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/539cb1dd56871623f80cecd101d39bb761fe37f7/prolog/utilities.pl#L86-L87
 
    - Improvements to Output
+  
+     - General Gifts
+
+       We have made an extra step beyond our proposal when it comes to gift recommendation. Even when there is no exact gift for a given category list, we will attempt to provide more general recommendations by checking the strict sublists of category list against the `gift/N` predicates. For more details, please refer to **Complex Querying with Recursive Rules** below.
 
      - Pretty Print
   
