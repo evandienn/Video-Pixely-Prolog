@@ -52,7 +52,15 @@ Here is a link to our [proposal](Project_Proposal.md)
   
      - If `N = 0` in `get_item/3`, it indicates users want to provide their own option, we read their input as free text with `read_str/1`.
          https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/539cb1dd56871623f80cecd101d39bb761fe37f7/prolog/gift_recommender.pl#L47-L53
-       
+
+    - Code Flow Example for Gift Recommendation
+  
+      We use `recommend_gift/2` to recommend a gift after getting the answers (i.e. `Answers`) for all categories (i.e. `Categories`) from users. Differing from the PoC, the MVP no longer checks against `gift/3` for recommendations, instead it constructs the gift predicate on the fly.
+      
+      - The first case of `recommend_gift/2` attempts to match an existing `gift/N` predicate by dynamically invoking `G` which is constructed from `Answers`. The result will be unified to `Gift` as the recommendation and subsequently printed together with `Categories` and `Answers` in a neat way.
+        https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/539cb1dd56871623f80cecd101d39bb761fe37f7/prolog/gift_recommender.pl#L61-L67
+      - If the first case fails, the second case will attempt to match for more general recommendations. For more details about how `recommend_general_gifts/2` works, please refer to **Complex Querying with Recursive Rules**.
+        https://github.students.cs.ubc.ca/yassersa/cpsc312-prolog/blob/539cb1dd56871623f80cecd101d39bb761fe37f7/prolog/gift_recommender.pl#L69-L72
 
 2. Knowledge Base Construction
 
